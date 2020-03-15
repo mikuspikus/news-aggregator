@@ -2,15 +2,17 @@ from django.shortcuts import render
 
 from .models import CustomUser
 from .serializers import CustomUserSerializer
+from .authentication import RemoteTokenAuthentication
+from .permissions import IsRemoteAuthenticated
 
 from rest_framework.views import APIView, Request, Response
 import rest_framework.status as st
 
 from logging import getLogger
 
-# make custom authorization
-
 class BaseView(APIView):
+    authentication_classes = (RemoteTokenAuthentication, )
+    permission_classes = []
     logger = getLogger('views')
     formatter = '{method} : {url} : {content_type} : {msg}'
 
@@ -31,8 +33,7 @@ class BaseView(APIView):
 class UserView(BaseView):
     model = CustomUser
     serializer = CustomUserSerializer
-    permission_classes = []
-    authentication_classes = []
+    permission_classes = (IsRemoteAuthenticated, )
 
     def get(self, request: Request, id_: int, format: str = 'json') -> Response:
         self.info(request, f'asked for object with id : {id_}')
