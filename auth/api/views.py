@@ -1,9 +1,10 @@
 from django.shortcuts import render
 
-from .models import UsersToken, RSSParserToken, CommetsToken, NewsToken, StatsToken
+from .models import UsersToken, RSSParserToken, CommentsToken, NewsToken, StatsToken
 from .serializers import UsersTokenSerializer, RSSPareserTokenSerializer, CommentsTokenSerializer, NewsTokenSerializer, StatsTokenSerializer
+from .authentication import UsersAuthentication, RSSParserAuthentication, CommentsAuthentication, NewsAuthentication, StatsAuthentication
+from .permissions import IsAuthenticatedFor
 
-from rest_framework.authtoken.serializers
 from rest_framework.views import APIView, Request, Response
 import rest_framework.status as st
 
@@ -27,12 +28,16 @@ class BaseView(APIView):
     def exception(self, request: Request, msg: str = None) -> None:
         self.logger.exception(self.__format(request, msg))
 
-class TokenAuthenticationView(BaseView):
+class TokenView(BaseView):
     token_model = None
     token_serializer = None
-    permission_classes = []
+    permission_classes = (IsAuthenticatedFor, )
     authentication_classes = []
     service = ''
+
+    def get(self, request: Request, format: str = 'json') -> Response:
+        self.info(request, f'checking token {request.auth} for service {self.service}')
+        return Response(status = st.HTTP_200_OK)
 
     def post(self, request: Request, format: str = 'json') -> Response:
         self.info(request, f'requesting token for service {self.service}')
@@ -44,22 +49,32 @@ class TokenAuthenticationView(BaseView):
 
         return Response(data = {'token': token.token}, status = st.HTTP_200_OK)
 
-class UsersAuthenticationView(TokenAuthenticationView):
+class UsersTokenView(TokenView):
     token_model = UsersToken
     token_serializer = UsersTokenSerializer
+    service = 'users'
+    authentication_classes = (UsersAuthentication, )
 
-class CommentsAuthenticationView(TokenAuthenticationView):
-    token_model = CommetsToken
+class CommentsTokenView(TokenView):
+    token_model = CommentsToken
     token_serializer = CommentsTokenSerializer
+    service = 'comments'
+    authentication_classes = (CommentsAuthentication, )
 
-class RSSParserAuthenticationView(TokenAuthenticationView):
+class PostRSSParserAuthView(TokenView):
     token_model = RSSParserToken
     token_serializer = RSSPareserTokenSerializer
+    service = 'rss-parser'
+    authentication_classes = (RSSParserAuthentication, )
 
-class NewsAuthenticationView(TokenAuthenticationView):
+class NewsTokenView(TokenView):
     token_model = NewsToken
     token_serializer = NewsTokenSerializer
+    service = 'news'
+    authentication_classes = (NewsAuthentication, )
 
-class StatsAuthenticationView(TokenAuthenticationView):
+class StatsTokenView(TokenView):
     token_model = StatsToken
     token_serializer = StatsTokenSerializer
+    service = 'stats'
+    authentication_classes = (StatsAuthentication, )
