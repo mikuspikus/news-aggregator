@@ -3,7 +3,7 @@ from django.db import models
 import binascii, os
 
 class Token(models.Model):
-    token = models.CharField(verbose_name='Token', max_length=40)
+    token = models.CharField(verbose_name='Token', max_length=40, primary_key=True)
     created = models.DateField(verbose_name='Creation date', auto_now_add=True)
 
     def save(self, *args, **kwargs):
