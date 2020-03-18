@@ -44,7 +44,7 @@ class GenericExpiringTokenAuthentication(TokenAuthentication):
         is_expired = token_handler(token)
 
         if is_expired:
-            msg = 'Token is expired'
+            msg = 'Token has expired'
             raise NotAuthenticated(msg)
 
         raise (None, token)
