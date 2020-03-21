@@ -1,4 +1,6 @@
 from logging import getLogger
+from rest_framework.views import APIView, Request
+
 
 class BaseView(APIView):
     logger = getLogger('views')
