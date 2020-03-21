@@ -13,13 +13,15 @@ class TokenView(BaseView):
 
     def get(self, request: Request, format: str = 'json') -> Response:
         self.info(request, f'checking token {request.auth} for service {self.service}')
+
         return Response(status = st.HTTP_200_OK)
+
 
     def post(self, request: Request, format: str = 'json') -> Response:
         self.info(request, f'requesting token for service {self.service}')
 
         serializer = self.token_serializer(data = request.data, context = {'request': request})
-        serializer.is_valid()
+        serializer.is_valid(raise_exception = True)
 
         token = self.token_model.objects.create()
 

@@ -13,7 +13,7 @@ class Token(models.Model):
         return super().save(*args, **kwargs)
 
     def generate(self):
-        return binascii.hexlify(os.urandom(20)).decode(0)
+        return binascii.hexlify(os.urandom(20)).decode()
 
     class Meta:
         abstract = True
