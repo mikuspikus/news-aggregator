@@ -71,6 +71,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'auth.wsgi.application'
 
+AUTH_USER_MODEL = 'api.AuthUser'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
@@ -121,10 +122,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+TOKEN_EXPIRED_AFTER_SECONDS = 3600
+
 CREDENTIALS = {
-    'USERS' : {'ID' : '', 'SECRET' : ''},
-    'COMMENTS' : {'ID' : '', 'SECRET' : ''},
-    'RSS-PARSER' : {'ID' : '', 'SECRET' : ''},
-    'NEWS' : {'ID' : '', 'SECRET' : ''},
-    'STATS' : {'ID' : '', 'SECRET' : ''},
+    'USERS' : {'ID' : 'users', 'SECRET' : 'users-secret'},
+    'COMMENTS' : {'ID' : 'comments', 'SECRET' : 'comments-secret'},
+    'RSS-PARSER' : {'ID' : 'rss-parser', 'SECRET' : 'rss-parser-secret'},
+    'NEWS' : {'ID' : 'news', 'SECRET' : 'news-secret'},
+    'STATS' : {'ID' : 'stats', 'SECRET' : 'stats-secret'},
 }

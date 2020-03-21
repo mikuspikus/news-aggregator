@@ -1,8 +1,8 @@
 from django.shortcuts import render
 
-from .models import UsersToken, RSSParserToken, CommentsToken, NewsToken, StatsToken
+from .models import AuthToken, UsersToken, RSSParserToken, CommentsToken, NewsToken, StatsToken
 from .serializers import UsersTokenSerializer, RSSPareserTokenSerializer, CommentsTokenSerializer, NewsTokenSerializer, StatsTokenSerializer
-from .authentication import UsersAuthentication, RSSParserAuthentication, CommentsAuthentication, NewsAuthentication, StatsAuthentication
+from .authentication import AuthAuthentication, UsersAuthentication, RSSParserAuthentication, CommentsAuthentication, NewsAuthentication, StatsAuthentication, UserCredentialsAuthentication
 
 from .tokenauthentication.permissions import IsAuthenticatedForMethods
 from .tokenauthentication.views import TokenView
@@ -12,6 +12,25 @@ from .base.views import BaseView
 
 from rest_framework.views import Request, Response
 import rest_framework.status as st
+
+class UserLoginView(BaseView):
+    authentication_classes = (UserCredentialsAuthentication, )
+    token_model = AuthToken
+
+    def post(self, request: Request, format: str = 'json') -> Response:
+        self.info(request, f'user \'{request.user.username}\' requested for token')
+
+        token, created = self.token_model.objects.get_or_create(user = request.user)
+
+        return Response(data = {'token' : token.token}, status = st.HTTP_200_OK)
+
+class AuthTokenView(BaseView):
+    authentication_classes = (AuthAuthentication, )
+
+    def get(self, request: Request, format: str = 'json') -> Response:
+        self.info(request, f'checking logged-in user token {request.auth}')
+
+        return Response(status = st.HTTP_200_OK)
 
 class UsersTokenView(TokenView):
     token_model = UsersToken
@@ -25,7 +44,7 @@ class CommentsTokenView(TokenView):
     service = 'comments'
     authentication_classes = (CommentsAuthentication, )
 
-class PostRSSParserAuthView(TokenView):
+class RSSParserTokenView(TokenView):
     token_model = RSSParserToken
     token_serializer = RSSPareserTokenSerializer
     service = 'rss-parser'
