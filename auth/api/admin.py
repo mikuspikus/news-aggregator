@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import AuthUser, AuthToken, UsersToken, NewsToken, CommentsToken, RSSParserToken, StatsToken
+from .models import AuthUser, AuthToken, AuthServiceToken, UsersServiceToken, NewsServiceToken, CommentsServiceToken, RSSParserServiceToken, StatsServiceToken
 
 
 admin.site.register(AuthUser, UserAdmin)
@@ -10,22 +10,26 @@ class AuthTokenAdmin(admin.ModelAdmin):
     pass
 admin.site.register(AuthToken, AuthTokenAdmin)
 
-class UsersTokenAdmin(admin.ModelAdmin):
+class AuthServiceTokenAdmin(admin.ModelAdmin):
     pass
-admin.site.register(UsersToken, UsersTokenAdmin)
+admin.site.register(AuthServiceToken, AuthServiceTokenAdmin)
 
-class NewsTokenAdmin(admin.ModelAdmin):
+class UsersServiceTokenAdmin(admin.ModelAdmin):
     pass
-admin.site.register(NewsToken, NewsTokenAdmin)
+admin.site.register(UsersServiceToken, UsersServiceTokenAdmin)
 
-class CommentsTokenAdmin(admin.ModelAdmin):
+class NewsServiceTokenAdmin(admin.ModelAdmin):
     pass
-admin.site.register(CommentsToken, CommentsTokenAdmin)
+admin.site.register(NewsServiceToken, NewsServiceTokenAdmin)
 
-class RSSParserTokenAdmin(admin.ModelAdmin):
+class CommentsServiceTokenAdmin(admin.ModelAdmin):
     pass
-admin.site.register(RSSParserToken, RSSParserTokenAdmin)
+admin.site.register(CommentsServiceToken, CommentsServiceTokenAdmin)
 
-class StatsTokenAdmin(admin.ModelAdmin):
+class RSSParserServiceTokenAdmin(admin.ModelAdmin):
     pass
-admin.site.register(StatsToken, StatsTokenAdmin)
+admin.site.register(RSSParserServiceToken, RSSParserServiceTokenAdmin)
+
+class StatsServiceTokenAdmin(admin.ModelAdmin):
+    pass
+admin.site.register(StatsServiceToken, StatsServiceTokenAdmin)
