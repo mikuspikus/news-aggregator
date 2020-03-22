@@ -5,6 +5,8 @@ import rest_framework.status as st
 from typing import Tuple
 
 from ..requesters.exceptions import ConnectionError
+from ..requesters.base import BaseRequester
+
 
 class RemoteTokenAuthentication(TokenAuthentication):
     keyword = 'Bearer'
@@ -12,14 +14,10 @@ class RemoteTokenAuthentication(TokenAuthentication):
 
     def authenticate_credentials(self, key: str) -> Tuple[None, str]:
         try:
-            data, code = self.requester.authenticate(token = key)
+            data, code = self.requester.authenticate(token=key)
 
-        except ConnectionError as error:
-            msg = str(error)
-            raise AuthenticationFailed(detail = msg, code = st.HTTP_503_SERVICE_UNAVAILABLE)
-
-        if code == 402:
-            msg = 'Invalid or experied token'
-            raise AuthenticationFailed(detail = msg)
+        if code != 200:
+            msg = data.get('error', 'Invalid or expired token')
+            raise AuthenticationFailed(detail=msg, code='authentication')
 
         return (None, key)
