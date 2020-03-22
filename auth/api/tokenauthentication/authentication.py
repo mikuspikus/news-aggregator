@@ -14,7 +14,7 @@ def expires_in(token: Token) -> datetime:
     time_elapsed = timezone.now() - token.created
     time_left = timedelta(settings.TOKEN_EXPIRED_AFTER_SECONDS) - time_elapsed
 
-    return time_elapsed
+    return time_left
 
 def is_token_expired(token: Token) -> bool:
     return expires_in(token) < timedelta(seconds = 0)
