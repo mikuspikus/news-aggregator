@@ -1,12 +1,14 @@
 from django.shortcuts import render
 
-from .models import CustomUser
-from .serializers import CustomUserSerializer
+from .models import User
+from .serializers import UserSerializer
 from .authentication import RemoteTokenAuthentication
 from .permissions import IsRemoteAuthenticated
 
 from rest_framework.views import APIView, Request, Response
 import rest_framework.status as st
+
+from uuid import UUID
 
 from logging import getLogger
 
@@ -31,8 +33,8 @@ class BaseView(APIView):
         self.logger.exception(self.__format(request, msg))
 
 class UserView(BaseView):
-    model = CustomUser
-    serializer = CustomUserSerializer
+    model = User
+    serializer = UserSerializer
     permission_classes = (IsRemoteAuthenticated, )
 
     def get(self, request: Request, id_: int, format: str = 'json') -> Response:
@@ -48,7 +50,7 @@ class UserView(BaseView):
         serializer_ = self.serializer(instance = row_)
         return Response(data = serializer_.data, status = st.HTTP_200_OK)
 
-    def patch(self, request: Request, id_: int, format: str = 'json') -> Response:
+    def patch(self, request: Request, id_: UUID, format: str = 'json') -> Response:
         self.info(request, f'asked to modify object with id : {id_}')
 
         try:
@@ -82,8 +84,8 @@ class UserView(BaseView):
         return Response(status = st.HTTP_204_NO_CONTENT)
 
 class UsersView(BaseView):
-    model = CustomUser
-    serializer = CustomUserSerializer
+    model = User
+    serializer = UserSerializer
 
     permission_classes = []
     authentication_classes = []
