@@ -1,5 +1,5 @@
 from .tokenauthentication.authentication import GenericExpiringTokenAuthentication
-from .models import AuthToken, UsersToken, CommentsToken, NewsToken, RSSParserToken, StatsToken, AuthUser
+from .models import AuthToken, AuthServiceToken, UsersServiceToken, CommentsServiceToken, NewsServiceToken, RSSParserServiceToken, StatsServiceToken, AuthUser
 
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.exceptions import AuthenticationFailed
@@ -9,20 +9,23 @@ from django.contrib.auth import authenticate
 
 from typing import Tuple
 
-class UsersAuthentication(GenericExpiringTokenAuthentication):
-    model = UsersToken
+class AuthServiceAuthentication(GenericExpiringTokenAuthentication):
+    model = AuthServiceToken
 
-class CommentsAuthentication(GenericExpiringTokenAuthentication):
-    model = CommentsToken
+class UsersServiceAuthentication(GenericExpiringTokenAuthentication):
+    model = UsersServiceToken
 
-class NewsAuthentication(GenericExpiringTokenAuthentication):
-    model = NewsToken
+class CommentsServiceAuthentication(GenericExpiringTokenAuthentication):
+    model = CommentsServiceToken
 
-class RSSParserAuthentication(GenericExpiringTokenAuthentication):
-    model = RSSParserToken
+class NewsServiceAuthentication(GenericExpiringTokenAuthentication):
+    model = NewsServiceToken
 
-class StatsAuthentication(GenericExpiringTokenAuthentication):
-    model = RSSParserToken
+class RSSParserServiceAuthentication(GenericExpiringTokenAuthentication):
+    model = RSSParserServiceToken
+
+class StatsServiceAuthentication(GenericExpiringTokenAuthentication):
+    model = StatsServiceToken
 
 class AuthAuthentication(GenericExpiringTokenAuthentication):
     model = AuthToken
