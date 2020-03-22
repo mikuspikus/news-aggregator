@@ -1,8 +1,13 @@
 from logging import getLogger
-
 import requests
 
 from typing import Union, Tuple
+
+from django.conf import settings
+
+# remake as functions module not class
+
+ERRORS_FIELD = settings.ERRORS_FIELD
 
 class BaseRequester:
     logger = getLogger(name = 'requesters')
@@ -42,3 +47,12 @@ class BaseRequester:
     def put(self, url: str, data: dict = {}, headers: dict = {}) -> requests.Response:
         self.info(f'requesting {url} with method \'PUT\'')
         return requests.put(url = url, data = data, headers = headers)
+
+    def authenticate(self, token: str) -> None:
+        raise NotImplementedError('Requester must implement this method before usage')
+
+    def process_error(self, error: requests.exceptions.RequestException) -> Tuple[dict, int]:
+        msg = str(error)
+        self.exception(msg)
+        
+        return ({ERRORS_FIELD : msg}, 503)
