@@ -125,6 +125,7 @@ STATIC_URL = '/static/'
 TOKEN_EXPIRED_AFTER_SECONDS = 3600
 
 CREDENTIALS = {
+    'AUTH' : {'ID' : 'auth', 'SECRET' : 'auth-secret'},
     'USERS' : {'ID' : 'users', 'SECRET' : 'users-secret'},
     'COMMENTS' : {'ID' : 'comments', 'SECRET' : 'comments-secret'},
     'RSS-PARSER' : {'ID' : 'rss-parser', 'SECRET' : 'rss-parser-secret'},
