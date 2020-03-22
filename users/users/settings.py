@@ -123,6 +123,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+ERRORS_FIELD = 'error'
+
 # Logging
 LOGGING = {
     'version': 1,
