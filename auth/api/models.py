@@ -11,17 +11,20 @@ class AuthUser(AbstractUser):
 class AuthToken(Token):
     user = models.OneToOneField(to = AuthUser, on_delete = models.CASCADE)
 
-class CommentsToken(Token):
+class AuthServiceToken(Token):
     pass
 
-class NewsToken(Token):
+class CommentsServiceToken(Token):
     pass
 
-class RSSParserToken(Token):
+class NewsServiceToken(Token):
     pass
 
-class StatsToken(Token):
+class RSSParserServiceToken(Token):
     pass
 
-class UsersToken(Token):
+class StatsServiceToken(Token):
+    pass
+
+class UsersServiceToken(Token):
     pass
