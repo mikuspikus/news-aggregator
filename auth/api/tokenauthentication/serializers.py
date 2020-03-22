@@ -1,14 +1,19 @@
 from rest_framework import serializers
 
 class TokenSerializer(serializers.Serializer):
-    ID = ''
-    SECRET = ''
+    CREDENTIALS = {}
 
     id = serializers.CharField(label = 'id')
     secret = serializers.CharField(label = 'secret')
 
     def __validate(self, id: str, secret: str) -> bool:
-        return self.ID == id and self.SECRET == secret
+
+        for service_creds in self.CREDENTIALS.items():
+            
+            if service_creds['ID'] == id and service_creds['SECRET'] == secret:
+                return True
+
+        return False
 
     def validate(self, attrs: dict) -> dict:
         id_, secret = attrs.get('id'), attrs.get('secret')

@@ -3,63 +3,23 @@ from django.contrib.auth.admin import UserAdmin
 
 from .models import (
     AuthUser,
-    AuthToken,
-    AuthServiceToken,
-    UsersServiceToken,
-    NewsServiceToken,
-    CommentsServiceToken,
-    RSSParserServiceToken,
-    StatsServiceToken,
+    UserAuthToken,
+    ServicesToken
 )
 
 
 admin.site.register(AuthUser, UserAdmin)
 
 
-class AuthTokenAdmin(admin.ModelAdmin):
+class UserAuthTokenAdmin(admin.ModelAdmin):
     pass
 
 
-admin.site.register(AuthToken, AuthTokenAdmin)
+admin.site.register(UserAuthToken, UserAuthTokenAdmin)
 
 
-class AuthServiceTokenAdmin(admin.ModelAdmin):
+class ServicesTokenAdmin(admin.ModelAdmin):
     pass
 
 
-admin.site.register(AuthServiceToken, AuthServiceTokenAdmin)
-
-
-class UsersServiceTokenAdmin(admin.ModelAdmin):
-    pass
-
-
-admin.site.register(UsersServiceToken, UsersServiceTokenAdmin)
-
-
-class NewsServiceTokenAdmin(admin.ModelAdmin):
-    pass
-
-
-admin.site.register(NewsServiceToken, NewsServiceTokenAdmin)
-
-
-class CommentsServiceTokenAdmin(admin.ModelAdmin):
-    pass
-
-
-admin.site.register(CommentsServiceToken, CommentsServiceTokenAdmin)
-
-
-class RSSParserServiceTokenAdmin(admin.ModelAdmin):
-    pass
-
-
-admin.site.register(RSSParserServiceToken, RSSParserServiceTokenAdmin)
-
-
-class StatsServiceTokenAdmin(admin.ModelAdmin):
-    pass
-
-
-admin.site.register(StatsServiceToken, StatsServiceTokenAdmin)
+admin.site.register(ServicesToken, ServicesTokenAdmin)
