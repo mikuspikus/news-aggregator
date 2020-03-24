@@ -1,5 +1,5 @@
-import api.baserequesters.base as base
-from api.baserequesters.decorators import TokenAuthorization
+import baserequesters.base as base
+from baserequesters.decorators import TokenAuthorization
 
 from requests.exceptions import RequestException
 from typing import Tuple
@@ -12,6 +12,7 @@ ERRORS_FIELD = getattr(settings, 'ERRORS_FIELD', 'error')
 __default_urls = {
     'auth-token': 'http://localhost:8080/v0/tokens',
     'send-credentials': 'http://localhost:8080/v0/users',
+    'update-credentials' : 'http://localhost:8080/v0/users/{uuid}'
 }
 URLS = getattr(settings, 'URLS', __default_urls)
 
@@ -72,7 +73,7 @@ def send_credentials(credentials: dict, headers: dict = {}) -> Tuple[dict, int]:
 def update_credentials(uuid: str, credentials: dict, headers: dict = {}) -> Tuple[dict, int]:
     try:
         response = base.patch(
-            url=f"{URLS['update-credentials']}/{uuid}",
+            url=URLS['update-credentials'].format(uuid=uuid),
             data=credentials,
             headers=headers
         )

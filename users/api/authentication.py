@@ -4,7 +4,7 @@ import rest_framework.status as st
 
 from typing import Tuple
 
-from .remoteauth.authentication import RemoteTokenAuthentication
+from remoteauth.authentication import RemoteTokenAuthentication
 from .requesters import authenticate
 
 class TokenAuthentication(RemoteTokenAuthentication):

@@ -1,5 +1,4 @@
 from .models import User
-import api.baserequesters.base as base
 from .requesters import send_credentials, update_credentials
 
 from rest_framework import serializers
