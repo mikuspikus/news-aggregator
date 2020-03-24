@@ -1,4 +1,4 @@
-from .tokenauthentication.authentication import GenericExpiringTokenAuthentication
+from tokenauthentication.authentication import GenericExpiringTokenAuthentication
 from .models import UserAuthToken, AuthUser, ServicesToken
 
 from rest_framework.authentication import BasicAuthentication
@@ -14,8 +14,13 @@ class ServicesAuthentication(GenericExpiringTokenAuthentication):
     model = ServicesToken
 
 
-class AuthAuthentication(GenericExpiringTokenAuthentication):
+class UserTokenAuthentication(GenericExpiringTokenAuthentication):
     model = UserAuthToken
+
+    def authenticate_credentials(self, key: str):
+        _, token = super().authenticate_credentials(key)
+
+        return (token.user, token)
 
 
 class UserCredentialsAuthentication(BasicAuthentication):
