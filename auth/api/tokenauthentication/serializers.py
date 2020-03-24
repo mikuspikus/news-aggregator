@@ -8,9 +8,8 @@ class TokenSerializer(serializers.Serializer):
 
     def __validate(self, id: str, secret: str) -> bool:
 
-        for service_creds in self.CREDENTIALS.items():
-            
-            if service_creds['ID'] == id and service_creds['SECRET'] == secret:
+        for service, creds in self.CREDENTIALS.items():
+            if creds['ID'] == id and creds['SECRET'] == secret:
                 return True
 
         return False

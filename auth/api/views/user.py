@@ -7,6 +7,7 @@ from ..models import (
 from ..authentication import (
     AuthAuthentication,
     UserCredentialsAuthentication,
+    ServicesAuthentication
 )
 
 from ..tokenauthentication.permissions import IsAuthenticatedForMethods
@@ -24,7 +25,7 @@ class UsersView(BaseView):
     model = AuthUser
     serializer = UserSerializer
     permission_classes = []
-    authentication_classes = []
+    authentication_classes = (ServicesAuthentication, )
 
     def post(self, request: Request) -> Response:
         self.info(request, f"adding object")

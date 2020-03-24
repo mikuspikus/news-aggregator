@@ -2,7 +2,7 @@ from ..models import AuthUser
 
 from rest_framework import serializers
 
-class UserSerializer(serializers.Serializer):
+class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AuthUser
