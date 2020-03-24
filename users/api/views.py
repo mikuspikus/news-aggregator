@@ -37,7 +37,7 @@ class UserView(BaseView):
     serializer = UserSerializer
     permission_classes = (IsRemoteAuthenticated, )
 
-    def get(self, request: Request, id_: int, format: str = 'json') -> Response:
+    def get(self, request: Request, id_: UUID, format: str = 'json') -> Response:
         self.info(request, f'asked for object with id : {id_}')
 
         try:
@@ -70,7 +70,7 @@ class UserView(BaseView):
         self.exception(request, f'not valid data for serializer : {serializer_.errors}')
         return Response(data = serializer_.errors, status = st.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request: Request, id_: int, format: str = 'json') -> Response:
+    def delete(self, request: Request, id_: UUID, format: str = 'json') -> Response:
         self.info(request, f'asked to delete object with id : {id_}')
 
         try:
@@ -96,7 +96,7 @@ class UsersView(BaseView):
 
         serializer_ = self.serializer(data = request.data)
 
-        if serializer_.is_valid():
+        if serializer_.is_valid(raise_exception=True):
             serializer_.save()
 
             return Response(data = serializer_.data, status = st.HTTP_201_CREATED)
