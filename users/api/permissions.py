@@ -1,8 +1,9 @@
-from rest_framework.permissions import BasePermission
-from rest_framework.views import Request, APIView
+from generic.permissions import IsAuthorizedAndOwner
+from rest_framework.views import Request
+
+from .models import User
 
 
-class IsRemoteAuthenticated(BasePermission):
-
-    def has_permission(self, request: Request, view: APIView) -> bool:
-        return bool(request.auth)
+class IsAuthorizedAndUser(IsAuthorizedAndOwner):
+    def is_owner(self, user: User, request: Request) -> bool:
+        return user.id == request.auth.get('uuid')
