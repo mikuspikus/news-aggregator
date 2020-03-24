@@ -1,13 +1,14 @@
 from .models import User
-from .requester import UsersRequester
+import api.baserequesters.base as base
+from .requesters import send_credentials, update_credentials
 
 from rest_framework import serializers
 
-class UserSerializer(serializers.Serializer):
+class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = 'id', 'username', 'password', 'email'
+        fields = ['id', 'username', 'password', 'email']
 
         extra_kwargs = {'password' : {'write_only': True}}
 
@@ -17,9 +18,9 @@ class UserSerializer(serializers.Serializer):
         new_user = User.objects.create(**validated_data)
         new_user.set_password(password)
 
-        credentials = {'username' : validated_data['username'], 'password' : validated_data['password']}
+        credentials = {'username' : validated_data['username'], 'password' : password}
 
-        response, code = UsersRequester().send_credentials(credentials)
+        response, code = send_credentials(credentials = credentials)
 
         if code != 201:
             msg = response.get('error', '')
@@ -47,7 +48,7 @@ class UserSerializer(serializers.Serializer):
             instance.email = new_email
 
         if credentials:
-            response, code = UsersRequester().update_credentials(credentials)
+            response, code = update_credentials(uuid = instance.id, credentials = credentials)
 
             if code != 200:
                 msg = response.get('error', '')
