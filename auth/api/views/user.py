@@ -5,17 +5,14 @@ from ..models import (
     AuthUser,
 )
 from ..authentication import (
-    AuthAuthentication,
+    UserTokenAuthentication,
     UserCredentialsAuthentication,
-    ServicesAuthentication
+    ServicesAuthentication,
 )
-
-from ..tokenauthentication.permissions import IsAuthenticatedForMethods
 
 from ..serializers.user import UserSerializer
 
-from ..base.views import BaseView
-
+from generic.views import BaseView
 
 from rest_framework.views import Request, Response
 import rest_framework.status as st
@@ -25,7 +22,7 @@ class UsersView(BaseView):
     model = AuthUser
     serializer = UserSerializer
     permission_classes = []
-    authentication_classes = (ServicesAuthentication, )
+    authentication_classes = (ServicesAuthentication,)
 
     def post(self, request: Request) -> Response:
         self.info(request, f"adding object")
@@ -41,9 +38,16 @@ class UsersView(BaseView):
         return Response(data=serializer_.errors, status=st.HTTP_400_BAD_REQUEST)
 
 
+class AuthTokenView(BaseView):
+    authentication_classes = (UserTokenAuthentication,)
+
+    def get(self, request: Request, format: str = "json") -> Response:
+        self.info(request, f"checking logged-in user token {request.auth}")
+        return Response(data= {'uuid' : request.user.uuid},status=st.HTTP_200_OK)
+
 class UserView(BaseView):
     model = AuthUser
-    authentication_classes = (AuthAuthentication,)
+    authentication_classes = (UserTokenAuthentication,)
     serializer = UserSerializer
 
     def patch(self, request: Request, uuid: str, format: str = "json") -> Response:
@@ -76,11 +80,3 @@ class UserLoginView(BaseView):
         token, created = self.token_model.objects.get_or_create(user=request.user)
 
         return Response(data={"token": token.token}, status=st.HTTP_200_OK)
-
-
-class AuthTokenView(BaseView):
-    authentication_classes = (AuthAuthentication,)
-
-    def get(self, request: Request, format: str = "json") -> Response:
-        self.info(request, f"checking logged-in user token {request.auth}")
-        return Response(status=st.HTTP_200_OK)

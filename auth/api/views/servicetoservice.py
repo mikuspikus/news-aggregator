@@ -5,11 +5,9 @@ from ..serializers.tokens import ServicesTokenSerializer
 
 from ..authentication import ServicesAuthentication
 
-from ..tokenauthentication.permissions import IsAuthenticatedForMethods
-from ..tokenauthentication.views import TokenView
+from tokenauthentication.views import TokenView
 
-from ..base.views import BaseView
-
+from generic.views import BaseView
 
 from rest_framework.views import Request, Response
 import rest_framework.status as st

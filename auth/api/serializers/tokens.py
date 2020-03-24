@@ -1,4 +1,4 @@
-from ..tokenauthentication.serializers import TokenSerializer
+from tokenauthentication.serializers import TokenSerializer
 
 from django.conf import settings
 
