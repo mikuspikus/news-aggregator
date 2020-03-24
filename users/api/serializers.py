@@ -17,16 +17,17 @@ class UserSerializer(serializers.ModelSerializer):
 
         new_user = User.objects.create(**validated_data)
         new_user.set_password(password)
+        new_user.save()
 
-        credentials = {'username' : validated_data['username'], 'password' : password}
+        credentials = {'username' : validated_data['username'], 'password' : password, 'uuid' : new_user.id}
 
         response, code = send_credentials(credentials = credentials)
 
         if code != 201:
-            msg = response.get('error', '')
-            raise serializers.ValidationError(msg)
+            new_user.delete()
 
-        new_user.save()
+            msg = response.get('error', str(response))
+            raise serializers.ValidationError(msg)
 
         return new_user
 

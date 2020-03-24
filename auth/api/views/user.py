@@ -49,7 +49,7 @@ class UserView(BaseView):
     def patch(self, request: Request, uuid: str, format: str = "json") -> Response:
         self.info(request, f"token ({request.auth}) changing user ({uuid}) credentials")
         try:
-            row_ = self.model.objects.get(pk=uuid)
+            row_ = self.model.objects.get(uuid=uuid)
 
         except self.model.DoesNotExist as error:
             self.exception(f"object with id : {uuid} not found")
@@ -83,5 +83,4 @@ class AuthTokenView(BaseView):
 
     def get(self, request: Request, format: str = "json") -> Response:
         self.info(request, f"checking logged-in user token {request.auth}")
-
         return Response(status=st.HTTP_200_OK)
