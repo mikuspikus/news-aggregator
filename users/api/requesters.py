@@ -1,13 +1,11 @@
-import baserequesters.base as base
-from baserequesters.decorators import TokenAuthorization
+import generic.base as base
+from generic.decorators import TokenAuthorization
 
 from requests.exceptions import RequestException
 from typing import Tuple
 
 from django.conf import settings
 from redis import StrictRedis
-
-ERRORS_FIELD = getattr(settings, 'ERRORS_FIELD', 'error')
 
 __default_urls = {
     'auth-token': 'http://localhost:8080/v0/tokens',
