@@ -15,5 +15,6 @@ class RemoteTokenAuthentication(TokenAuthentication):
         if code != 200:
             msg = data.get('error', 'Invalid or expired token')
             raise AuthenticationFailed(detail=msg, code='authentication')
-
-        return (None, key)
+        
+        data['token'] = key
+        return (None, data)
