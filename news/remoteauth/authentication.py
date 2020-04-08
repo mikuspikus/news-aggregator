@@ -4,6 +4,8 @@ import rest_framework.status as st
 
 from typing import Tuple
 
+from django.conf import settings
+ERRORS_FIELD = getattr(settings, 'ERRORS_FIELD', 'error')
 
 class RemoteTokenAuthentication(TokenAuthentication):
     keyword = 'Bearer'
@@ -13,7 +15,7 @@ class RemoteTokenAuthentication(TokenAuthentication):
         data, code = self.authenticate(token=key)
 
         if code != 200:
-            msg = data.get('error', 'Invalid or expired token')
+            msg = data.get(ERRORS_FIELD, 'Invalid or expired token')
             raise AuthenticationFailed(detail=msg, code='authentication')
         
         data['token'] = key
