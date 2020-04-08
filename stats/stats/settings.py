@@ -41,6 +41,11 @@ INSTALLED_APPS = [
     'api'
 ]
 
+# authentication backend for admin panel
+AUTHENTICATION_BACKENDS = [
+   'api.backends.RemoteAuthBackend',
+]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
