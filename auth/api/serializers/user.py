@@ -6,7 +6,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AuthUser
-        fields = 'id', 'uuid', 'username', 'password'
+        fields = 'id', 'uuid', 'username', 'password', 'is_staff'
 
         extra_kwargs = {'password' : {'write_only': True}}
 
@@ -27,6 +27,10 @@ class UserSerializer(serializers.ModelSerializer):
         if validated_data.get('password'):
             new_password = validated_data.pop('password')
             instance.set_password(new_password)
+
+        if validated_data.get('is_staff'):
+            is_staff = validated_data.pop('is_staff')
+            instance.is_staff = is_staff
 
         instance.save()
         return instance

@@ -7,7 +7,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'password', 'email']
+        fields = ['id', 'username', 'password', 'email', 'is_staff']
 
         extra_kwargs = {'password' : {'write_only': True}}
 
@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
         new_user.set_password(password)
         new_user.save()
 
-        credentials = {'username' : validated_data['username'], 'password' : password, 'uuid' : new_user.id}
+        credentials = {'username' : validated_data['username'], 'password' : password, 'uuid' : new_user.id, 'is_staff': new_user.is_staff}
 
         response, code = send_credentials(credentials = credentials)
 
@@ -42,6 +42,11 @@ class UserSerializer(serializers.ModelSerializer):
             new_password = validated_data.pop('password')
             credentials['password'] = instance.password
             instance.set_password(new_password)
+
+        if validated_data.get('is_staff'):
+            is_staff = validated_data.pop('is_staff')
+            credentials['is_staff'] = is_staff
+            instance.is_staff = is_staff
 
         if validated_data.get('email'):
             new_email = validated_data.pop('email')
