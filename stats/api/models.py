@@ -1,3 +1,19 @@
 from django.db import models
 
-# Create your models here.
+from statshandling.models import GenericStat
+
+
+class UsersStat(GenericStat):
+    pass
+
+
+class NewsStat(GenericStat):
+    pass
+
+
+class CommentsStat(GenericStat):
+    pass
+
+
+class RSSParserStat(GenericStat):
+    pass
