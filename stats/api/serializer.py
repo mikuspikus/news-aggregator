@@ -22,4 +22,4 @@ class RSSParserStatSerializer(GenericStatSerializer):
 class UsersStatsSerializer(GenericStatSerializer):
 
     class Meta:
-        model = UsersStatsSerializer
+        model = UsersStat
