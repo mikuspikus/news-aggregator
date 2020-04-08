@@ -11,8 +11,8 @@ class BaseStatView(BaseView):
     serializer = GenericStatSerializer
     service = ''
 
-    def post(self, request: Request) -> Response:
-        self.info(request, f"adding stats for service '{self.service}'")
+    def post(self, request: Request, format: str = 'json') -> Response:
+        self.info(request, f"adding stats for service [{self.service}]")
 
         serializer = self.serializer(data =request.data)
         if serializer.is_valid():
