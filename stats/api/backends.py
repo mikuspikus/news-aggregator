@@ -1,4 +1,4 @@
-from .requesters import authenticate
+from .requesters import authenticate_credentials
 
 from generic.backends import GenericRemoteAuthBackend
 
@@ -10,4 +10,4 @@ class RemoteAuthBackend(GenericRemoteAuthBackend):
     ERRORS_FIELD = ERRORS_FIELD
 
     def authenticate_credentials(self, username, password):
-        return authenticate(username, password)
+        return authenticate_credentials(username, password)
