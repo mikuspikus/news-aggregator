@@ -6,6 +6,8 @@ from .serializers import GenericStatSerializer
 from rest_framework.views import Request, Response
 import rest_framework.status as st
 
+
+
 class BaseStatView(BaseView):
     model = GenericStat
     serializer = GenericStatSerializer
@@ -14,7 +16,7 @@ class BaseStatView(BaseView):
     def post(self, request: Request, format: str = 'json') -> Response:
         self.info(request, f"adding stats for service [{self.service}]")
 
-        serializer = self.serializer(data =request.data)
+        serializer = self.serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(status=st.HTTP_202_ACCEPTED)

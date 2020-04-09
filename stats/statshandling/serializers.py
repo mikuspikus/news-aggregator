@@ -6,3 +6,4 @@ class GenericStatSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GenericStat
+        fields = '__all__'
