@@ -64,8 +64,8 @@ class NewsVoteView(BaseView):
 class SingleNewsView(BaseView):
     model = News
     serializer = NewsSerializer
-    #authentication_classes = (TokenAuthentication, )
-    #permission_classes = (IsAuthenticatedFor, IsAuthorizedAndNewsOwner)
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (IsAuthenticatedFor, IsAuthorizedAndNewsOwner)
 
     def get(self, request: Request, pk: UUID, format: str = 'json') -> Response:
         self.info(request, f'asked for object with pk : {pk}')
