@@ -19,8 +19,8 @@ class GenericStat(models.Model):
         choices=Actions.choices,
         default=Actions.GET
     )
-    input = JSONField(null=True)
-    output = JSONField(null=True)
+    input = JSONField(null=True, blank=True)
+    output = JSONField(null=True, blank=True)
 
     class Meta:
         abstract = True
