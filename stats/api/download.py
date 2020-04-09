@@ -17,14 +17,14 @@ def report(queryset, title: str, headers: List[str], filename: str) -> HttpRespo
     worksheet.title = title
 
     r_num = 1
-    for c_num, header in enumerate(headers):
+    for c_num, header in enumerate(headers, 1):
         worksheet.cell(row = r_num, column = c_num, value = header)
 
     for row in queryset:
         r_num += 1
         
-        for c_num, value in enumerate(row, 1):
-            worksheet.cell(row = r_num, column = c_num, value = value)
+        for c_num, value in enumerate((row.user, row.datetimestamp, row.action, row.input, row.output), 1):
+            worksheet.cell(row = r_num, column = c_num, value = str(value))
 
     workbook.save(response)
     return response
