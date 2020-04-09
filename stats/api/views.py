@@ -2,29 +2,37 @@ from django.shortcuts import render
 
 from statshandling.views import BaseStatView
 
+from remoteauth.permissions import IsRemoteAuthenticated
+
 from .models import NewsStat, CommentsStat, RSSParserStat, UsersStat
-from .serializer import NewsStatSerializer, CommentsStatSerializer, RSSParserStatSerializer, UsersStatsSerializer
+from .serializers import NewsStatSerializer, CommentsStatSerializer, RSSParserStatSerializer, UsersStatsSerializer
+from .authentication import TokenAuthentication
 
 
-class UsersStatView(BaseStatView):
+class StatView(BaseStatView):
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (IsRemoteAuthenticated,)
+
+
+class UsersStatView(StatView):
     model = UsersStat
     serializer = UsersStatsSerializer
     service = 'user'
 
 
-class CommentsStatsView(BaseStatView):
+class CommentsStatsView(StatView):
     model = CommentsStat
     serializer = CommentsStatSerializer
     service = 'comments'
 
 
-class RSSParserStatsView(BaseStatView):
+class RSSParserStatsView(StatView):
     model = RSSParserStat
     serializer = RSSParserStatSerializer
-    service = 'user'
+    service = 'rssparser'
 
 
-class NewsStatsView(BaseStatView):
+class NewsStatsView(StatView):
     model = NewsStat
     serializer = UsersStatsSerializer
-    service = 'user'
+    service = 'news'
