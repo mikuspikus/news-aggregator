@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from .models import User
 from .serializers import UserSerializer
-from .authentication import RemoteTokenAuthentication
+from .authentication import TokenAuthentication
 
 from rest_framework.views import APIView, Request, Response
 import rest_framework.status as st
@@ -56,7 +56,7 @@ class UsersView(BaseView):
     serializer = UserSerializer
 
     permission_classes = [IsRemoteAuthenticated]
-    authentication_classes = [RemoteTokenAuthentication]
+    authentication_classes = [TokenAuthentication]
 
     def post(self, request: Request) -> Response:
         self.info(request, f'adding object')
