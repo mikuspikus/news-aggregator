@@ -7,6 +7,7 @@ from typing import Tuple
 from django.conf import settings
 ERRORS_FIELD = getattr(settings, 'ERRORS_FIELD', 'error')
 
+
 class RemoteTokenAuthentication(TokenAuthentication):
     keyword = 'Bearer'
 
@@ -14,11 +15,14 @@ class RemoteTokenAuthentication(TokenAuthentication):
         return None
 
     def authenticate_credentials(self, key: str) -> Tuple[None, str]:
-        data, code = self.authenticate(token=key)
+        data, code = self.auth(token=key)
 
-        if code != 200:
+        if code == 200:
+            data['token'] = key
+            return (None, data)
+
+        if code == 503:
             msg = data.get(ERRORS_FIELD, 'Invalid or expired token')
             raise AuthenticationFailed(detail=msg, code='authentication')
-        
-        data['token'] = key
-        return (None, data)
+
+        return None
