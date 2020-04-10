@@ -49,6 +49,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# authentication backend for admin panel
+AUTHENTICATION_BACKENDS = [
+    'api.backends.RemoteAuthBackend',
+]
+
+
 ROOT_URLCONF = 'rssparser.urls'
 
 TEMPLATES = [
