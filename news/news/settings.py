@@ -53,6 +53,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'news.urls'
 
+# authentication backend for admin panel
+AUTHENTICATION_BACKENDS = [
+    'api.backends.RemoteAuthBackend',
+]
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
