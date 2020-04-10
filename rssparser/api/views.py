@@ -17,7 +17,7 @@ class FeedsView(BaseView):
     authentication_classes = (TokenAuthentication, )
     permission_classes = (IsAuthenticatedFor, IsAuthorizedAndFeedOwner)
 
-    def get(self, request: Request, pk: UUID, format: str = 'json') -> Response:
+    def get(self, request: Request, pk: int, format: str = 'json') -> Response:
         self.info(request, f'asked for object with pk : {pk}')
 
         obj = self.get_object(request, pk)
@@ -25,7 +25,7 @@ class FeedsView(BaseView):
 
         return Response(data=serializer_.data, status=st.HTTP_200_OK)
 
-    def patch(self, request: Request, pk: UUID, format: str = 'json') -> Response:
+    def patch(self, request: Request, pk: int, format: str = 'json') -> Response:
         self.info(request, f'asked to modify object with id : {pk}')
 
         obj = self.get_object(request, pk)
@@ -40,7 +40,7 @@ class FeedsView(BaseView):
             request, f'not valid data for serializer : {serializer_.errors}')
         return Response(data=serializer_.errors, status=st.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request: Request, pk: UUID, format: str = 'json') -> Response:
+    def delete(self, request: Request, pk: int, format: str = 'json') -> Response:
         self.info(request, f'asked to delete object with id : {pk}')
 
         obj = self.get_object(request, pk)

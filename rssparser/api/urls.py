@@ -1,8 +1,8 @@
 from django.urls import path
 
-from .views import NewsVoteView, SingleNewsView, MultiNewsView
+from .views import FeedView, FeedsView
 
 urlpatterns = [
-    path(f"feeds", MultiNewsView.as_view(), name="feeds"),
-    path(f"feeds/<int:pk>", SingleNewsView.as_view(), name="feed"),
+    path(f"feeds", FeedsView.as_view(), name="feeds"),
+    path(f"feeds/<int:pk>", FeedView.as_view(), name="feed"),
 ]
