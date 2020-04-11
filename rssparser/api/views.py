@@ -1,15 +1,34 @@
-from django.shortcuts import render
-
+from uuid import UUID
 from generic.views import BaseView
 
 from .models import Feed
 from .serializers import FeedSerializer
 from .authentication import TokenAuthentication
-from .permissions import IsAuthorizedAndFeedOwner, IsAuthenticatedFor
+from .permissions import IsAuthorizedAndFeedOwner, IsAuthenticatedFor, IsAuthorizedAndFeedsOwner
 
 
 from rest_framework.views import Request, Response
 import rest_framework.status as st
+
+import feedparser as fp
+
+
+class FeedParserView(BaseView):
+    model = Feed
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthorizedAndFeedsOwner,)
+
+    def get_object(self, request: Request, user: UUID) -> Feed:
+        feed = self.model.objects.filter(user = user)
+
+    def get(self, request: Request, user: UUID, format: str = 'json') -> Response:
+        self.info(request, f"requested for user ({user}) feeds")
+
+        feeds = self.get_object(request, user)
+        parsed_feeds = [fp.parse(feed.url) for feed in feeds]
+
+        return Response(data = parsed_feeds, status = st.HTTP_200_OK)
+
 
 class FeedsView(BaseView):
     model = Feed
