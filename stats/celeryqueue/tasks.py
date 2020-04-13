@@ -11,6 +11,10 @@ TASK_KWARGS = {
     'retry_backoff': True
 }
 
+TEMPLATE = "{0}.{1}.{2}"
+MODULE = "tasks"
+SPACE = "stats"
+
 
 def send_stats(data: dict, requester):
     data, code = requester(data)
@@ -21,7 +25,7 @@ def send_stats(data: dict, requester):
     return data, code
 
 
-@app.task(**TASK_KWARGS)
+@app.task(**TASK_KWARGS, name=TEMPLATE.format(MODULE, SPACE, "user"))
 def send_user_stats(user, action, input, output):
     data = {
         'user': user,
@@ -34,7 +38,7 @@ def send_user_stats(user, action, input, output):
     return (data, code)
 
 
-@app.task(**TASK_KWARGS)
+@app.task(**TASK_KWARGS, name=TEMPLATE.format(MODULE, SPACE, "news"))
 def send_news_stats(user, action, input, output):
     data = {
         'user': user,
@@ -47,7 +51,7 @@ def send_news_stats(user, action, input, output):
     return data, code
 
 
-@app.task(**TASK_KWARGS)
+@app.task(**TASK_KWARGS, name=TEMPLATE.format(MODULE, SPACE, "comment"))
 def send_comment_stats(user, action, input, output):
     data = {
         'user': user,
@@ -60,7 +64,7 @@ def send_comment_stats(user, action, input, output):
     return data, code
 
 
-@app.task(**TASK_KWARGS)
+@app.task(**TASK_KWARGS, name=TEMPLATE.format(MODULE, SPACE, "rssparser"))
 def send_rssparser_stats(user, action, input, output):
     data = {
         'user': user,
