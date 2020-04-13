@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from celery import Celery
+
+from queueconfig.celeryconfig import Config
 
 from .models import Comment
 from .serializers import CommentSerializer
@@ -14,6 +16,18 @@ from .permissions import IsAuthorizaedAndAuthor
 from generic.views import BaseView
 
 
+class CommentsBaseView(BaseView):
+    celery = Celery()
+    task = 'tasks.stats.comment'
+
+    def __init__(self, **kwargs):
+        self.celery.config_from_object(Config)
+        super().__init__(**kwargs)
+
+    def send_task(self, action: str, user: UUID = None, input: dict = None, output: dict = None):
+        self.celery.send_task(self.task, [user, action, input, output])
+
+
 class CommentView(BaseView):
     model = Comment
     serializer = CommentSerializer
@@ -24,6 +38,7 @@ class CommentView(BaseView):
 
         obj = self.get_object(request, id_)
         serializer_ = self.serializer(instance=obj)
+        self.send_task(action = 'GET', user = request.auth.get('uuid'), output = serializer_.data)
 
         return Response(data=serializer_.data, status=st.HTTP_200_OK)
 
@@ -31,15 +46,18 @@ class CommentView(BaseView):
         self.info(request, f'asked to modify object with id : {id_}')
 
         obj = self.get_object(request, id_)
+        old_objserializer = self.serializer(instance=obj)
         serializer_ = self.serializer(instance=obj, data=request.data)
 
         if serializer_.is_valid():
             serializer_.save()
+            self.send_task(action = 'PATCH', user = request.auth.get('uuid'), input = old_objserializer.data, output = serializer_.data)
 
             return Response(data=serializer_.data, status=st.HTTP_202_ACCEPTED)
 
         self.exception(
             request, f'not valid data for serializer : {serializer_.errors}')
+        self.send_task(action = 'PATCH', user = request.auth.get('uuid'), input = old_objserializer.data, output = serializer_.errors)
         return Response(data=serializer_.errors, status=st.HTTP_400_BAD_REQUEST)
 
     def delete(self, request: Request, id_: int, format: str = 'json') -> Response:
@@ -47,6 +65,7 @@ class CommentView(BaseView):
 
         obj = self.get_object(request, id_)
         obj.delete()
+        self.send_task(name = 'DELETE', user = request.auth.get('uuid'), output = serializer.data)
 
         return Response(status=st.HTTP_204_NO_CONTENT)
 
@@ -65,6 +84,8 @@ class CommentsView(BaseView):
 
         if serializer_.is_valid(raise_exception=True):
             serializer_.save()
+            self.send_task(action = 'POST', user = request.auth.get('uuid'), output = serializer_.data)
+
 
             return Response(data=serializer_.data, status=st.HTTP_201_CREATED)
 
@@ -82,5 +103,7 @@ class CommentsView(BaseView):
             row_s_ = row_s_.filter(news = news)
 
         serializer_ = self.serializer(data=row_s_, many=True)
+        user = request.auth.get('uuid') if request.auth else None
+        self.send_task(name = 'GET', user = user, output = {'length' : len(serializer_.data)})
 
         return Response(data=serializer_.data, status=st.HTTP_200_OK)
