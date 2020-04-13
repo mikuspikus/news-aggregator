@@ -12,7 +12,7 @@ class GenericStat(models.Model):
         PATCH = 'PATCH', _('PATCH')
         GET = 'GET', _('GET')
 
-    user = models.UUIDField(null=True)
+    user = models.UUIDField(null=True, blank=True)
     datetimestamp = models.DateTimeField(auto_now=True)
     action = models.CharField(
         max_length=6,
