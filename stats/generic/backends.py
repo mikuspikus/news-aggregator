@@ -25,10 +25,13 @@ class GenericRemoteAuthBackend(ModelBackend):
             user = self.model.objects.get(username=username)
 
         except self.model.DoesNotExist:
-            user = self.model(username)
+            user = self.model(username=username)
         
-        # keep 'is_staff' field updated
-        user.is_staff = bool(data['is_staff'])
+        # keep 'is_superuser' and 'is_staff' fields updated
+        # is_superuser = True let user have access to standart admin panel editing tools
+        user.is_superuser = data['is_superuser']
+        # is_staff = True let user pass through admin panel login form
+        user.is_staff = user.is_superuser
         user.save()
 
         return user
