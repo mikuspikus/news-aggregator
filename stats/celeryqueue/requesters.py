@@ -1,7 +1,8 @@
 from generic import base
 import os
-from requests.exceptions import ConnectionError
+from requests.exceptions import RequestException
 from typing import Tuple
+
 
 URLS = {
     'user-stats': os.environ.get('user-stats', ''),
@@ -9,7 +10,6 @@ URLS = {
     'comments-stats': os.environ.get('comments-stats', ''),
     'rss-parser-stats': os.environ.get('rss-parser-stats', ''),
 }
-
 
 def user_stats(data: dict, headers: dict) -> Tuple[dict, int]:
     try:
@@ -19,7 +19,7 @@ def user_stats(data: dict, headers: dict) -> Tuple[dict, int]:
             headers=headers
         )
 
-    except ConnectionError as error:
+    except RequestException as error:
         return base.process_error(error)
 
     return response.json(), response.status_code
@@ -33,7 +33,7 @@ def news_stats(data: dict, headers: dict) -> Tuple[dict, int]:
             headers=headers
         )
 
-    except ConnectionError as error:
+    except RequestException as error:
         return base.process_error(error)
 
     return response.json(), response.status_code
@@ -47,7 +47,7 @@ def comments_stats(data: dict, headers: dict) -> Tuple[dict, int]:
             headers=headers
         )
 
-    except ConnectionError as error:
+    except RequestException as error:
         return base.process_error(error)
 
     return response.json(), response.status_code
@@ -61,7 +61,7 @@ def rssparser_stats(data: dict, headers: dict) -> Tuple[dict, int]:
             headers=headers
         )
 
-    except ConnectionError as error:
+    except RequestException as error:
         return base.process_error(error)
 
     return response.json(), response.status_code
