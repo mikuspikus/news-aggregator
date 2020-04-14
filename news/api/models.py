@@ -20,6 +20,9 @@ class News(models.Model):
 
     votes = models.ManyToManyField(to=User, through='Vote')
 
+    class Meta:
+        verbose_name_plural = "News"
+
     def __str__(self) -> str:
         return f'"{self.title}" [{self.url}] by ({self.author})'
 
