@@ -25,10 +25,10 @@ class GenericRemoteAuthBackend(ModelBackend):
             user = self.model.objects.get(username=username)
 
         except self.model.DoesNotExist:
-            user = self.model(username)
+            user = self.model(username=username)
         
-        # keep 'is_staff' field updated
-        user.is_staff = bool(data['is_staff'])
+        # keep 'is_superuser' field updated
+        user.is_superuser = bool(data['is_superuser'])
         user.save()
 
         return user

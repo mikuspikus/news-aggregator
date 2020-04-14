@@ -79,4 +79,4 @@ class UserLoginView(BaseView):
 
         token, created = self.token_model.objects.get_or_create(user=request.user)
 
-        return Response(data={"token": token.token, 'uuid' : request.user.uuid, 'is_staff': request.user.is_staff}, status=st.HTTP_200_OK)
+        return Response(data={"token": token.token, 'uuid' : request.user.uuid, 'is_superuser': request.user.is_superuser}, status=st.HTTP_200_OK)
