@@ -13,7 +13,7 @@ class TokenView(BaseView):
     def get(self, request: Request, format: str = 'json') -> Response:
         self.info(request, f'checking token {request.auth}')
 
-        return Response(status = st.HTTP_200_OK)
+        return Response(data = {'success': True}, status = st.HTTP_200_OK)
 
 
     def post(self, request: Request, format: str = 'json') -> Response:
