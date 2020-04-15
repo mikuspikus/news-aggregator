@@ -41,7 +41,7 @@ def authenticate(token: str) -> Tuple[dict, int]:
     try:
         response = base.get(
             url=URLS['auth-token'],
-            headers={'Authentication': token}
+            headers={'Authorization': token}
         )
 
     except RequestException as error:

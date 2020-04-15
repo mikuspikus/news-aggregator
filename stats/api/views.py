@@ -34,5 +34,5 @@ class RSSParserStatsView(StatView):
 
 class NewsStatsView(StatView):
     model = NewsStat
-    serializer = UsersStatsSerializer
+    serializer = NewsStatSerializer
     service = 'news'
