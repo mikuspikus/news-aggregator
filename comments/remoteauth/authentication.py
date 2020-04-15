@@ -15,7 +15,7 @@ class RemoteTokenAuthentication(TokenAuthentication):
         return None
 
     def authenticate_credentials(self, key: str) -> Tuple[None, str]:
-        data, code = self.auth(token=key)
+        data, code = self.auth(token=f"{self.keyword} {key}")
 
         if code == 200:
             data['token'] = key
