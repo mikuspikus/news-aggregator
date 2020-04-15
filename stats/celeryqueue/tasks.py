@@ -17,7 +17,7 @@ SPACE = "stats"
 
 
 def send_stats(data: dict, requester):
-    data, code = requester(data)
+    data, code = requester(data = data, headers = {})
 
     if code == 503:
         raise ConnectionError
