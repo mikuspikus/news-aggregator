@@ -5,10 +5,9 @@ from typing import Union, Tuple
 
 from django.conf import settings
 
-# remake as functions module not class
-
-ERRORS_FIELD = getattr(settings, 'ERRORS_FIELD', 'error')
-FORMATTER = getattr(settings, 'FORMATTER', '')
+import os
+ERRORS_FIELD = os.environ.get('ERRORS_FIELD', 'error')
+FORMATTER = os.environ.get('FORMATTER', '')
 
 logger = getLogger(name='requesters')
 
@@ -27,12 +26,12 @@ def exception(msg: str) -> None:
 
 def get(url: str, data: dict = {}, headers: dict = {}) -> requests.Response:
     info(f'requesting {url} with method \'GET\'')
-    return requests.get(url=url, data=data, headers=headers)
+    return requests.get(url=url, json=data, headers=headers)
 
 
 def post(url: str, data: dict = {}, headers: dict = {}) -> requests.Response:
     info(f'requesting {url} with method \'POST\'')
-    return requests.post(url=url, data=data, headers=headers)
+    return requests.post(url=url, json=data, headers=headers)
 
 
 def delete(url: str, headers: dict = {}) -> requests.Response:
@@ -42,12 +41,12 @@ def delete(url: str, headers: dict = {}) -> requests.Response:
 
 def patch(url: str, data: dict = {}, headers: dict = {}) -> requests.Response:
     info(f'requesting {url} with method \'PATCH\'')
-    return requests.patch(url=url, data=data, headers=headers)
+    return requests.patch(url=url, json=data, headers=headers)
 
 
 def put(url: str, data: dict = {}, headers: dict = {}) -> requests.Response:
     info(f'requesting {url} with method \'PUT\'')
-    return requests.put(url=url, data=data, headers=headers)
+    return requests.put(url=url, json=data, headers=headers)
 
 
 def process_error(error: requests.exceptions.RequestException) -> Tuple[dict, int]:
