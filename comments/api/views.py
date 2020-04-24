@@ -31,6 +31,7 @@ class CommentsBaseView(BaseView):
 class CommentView(BaseView):
     model = Comment
     serializer = CommentSerializer
+    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthorizaedAndAuthor, )
 
     def get(self, request: Request, id_: int, format: str = 'json') -> Response:
