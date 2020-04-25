@@ -15,8 +15,8 @@
         <b-form-input id="input-url" v-model="form.url" type="url" required placeholder="Enter URL"></b-form-input>
       </b-form-group>
 
-      <b-button type="submit" variant="primary">Submit</b-button>
-      <b-button type="reset" variant="danger">Reset</b-button>
+      <b-button type="submit" variant="outline-dark">Submit</b-button>
+      <b-button type="reset" variant="dark">Reset</b-button>
     </b-form>
   </div>
 </template>
@@ -26,15 +26,18 @@ export default {
   name: "news-form",
 
   props: {
-      uuid: String
+    title: { type: String, default: null },
+    url: { type: String, default: null },
+    edit: { typr: Boolean },
+    uuid: String
   },
 
   data() {
     return {
-      show = true,
+      show: true,
       form: {
-        title: '',
-        url: ''
+        title: this.title !== null ? this.title : "",
+        url: this.url !== null ? this.url : ""
       }
     };
   },
@@ -42,17 +45,23 @@ export default {
   methods: {
     onSubmit(event) {
       event.preventDefault();
+
+      this.$emit("update:title", this.form.title);
+      this.$emit("update:url", this.form.url);
+      this.$emit("update:edit", false);
     },
 
     onReset(event) {
       event.preventDefault();
 
-      this.form.title = '';
-      this.form.url = '';
+      this.form.title = this.title;
+      this.form.url = this.url;
 
       this.show = false;
       // magic trick to reset/clear native browser form validation state
-      this.$nextTick(() => { this.show = true })
+      this.$nextTick(() => {
+        this.show = true;
+      });
     }
   }
 };
