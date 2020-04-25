@@ -17,8 +17,8 @@
         ></b-textarea>
       </b-form-group>
 
-      <b-button type="submit" variant="primary">Submit</b-button>
-      <b-button type="reset" variant="danger">Reset</b-button>
+      <b-button type="submit" variant="outline-dark">Submit</b-button>
+      <b-button type="reset" variant="dark">Reset</b-button>
     </b-form>
   </div>
 </template>
@@ -28,14 +28,16 @@ export default {
   name: "comment-form",
 
   props: {
-      uuid: String
+    body: { type: String, default: null },
+    edit: { type: Boolean },
+    user: String
   },
 
   data() {
     return {
-      show = true,
+      show: true,
       form: {
-        body: ''
+        body: this.body !== null ? this.body : ""
       }
     };
   },
@@ -43,14 +45,21 @@ export default {
   methods: {
     onSubmit(event) {
       event.preventDefault();
+
+      this.$emit("update:body", this.form.body);
+      this.$emit('update:edit', false);
     },
 
     onReset(event) {
       event.preventDefault();
-      this.form.body = '';
+
+      this.form.body = this.body;
+
       this.show = false;
       // magic trick to reset/clear native browser form validation state
-      this.$nextTick(() => { this.show = true })
+      this.$nextTick(() => {
+        this.show = true;
+      });
     }
   }
 };
