@@ -8,6 +8,13 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
+import axios from 'axios'
+
+Vue.prototype.$http = axios
+const token = localStorage.getItem('token')
+
+if (token) { Vue.prototype.$http.defaults.headers.common['Authorization'] = token; }
+
 // Install BootstrapVue
 Vue.use(BootstrapVue)
 // Optionally install the BootstrapVue icon components plugin
