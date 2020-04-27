@@ -1,33 +1,38 @@
 <template>
   <div id="comment">
-    <b-card no-body>
-      <b-card-header header-tag="b-navbar">
-        <b-navbar toggleable="lg" type="dark" variant="dark">
-          <b-navbar-brand href="#">{{ comment.author }}</b-navbar-brand>
+    <b-card class="text-left m-0 p-0" no-body>
+      <b-card-header header-border-variant="dark" header-bg-variant="dark" class="m-0 p-0">
+        <b-navbar type="dark">
+          <b-navbar-brand :to="{name: 'User', params: {uuid: comment.author.uuid}}">{{ comment.author.username }}</b-navbar-brand>
+          <template v-if="isOwner">
+            <!-- Right aligned nav items -->
+            <b-navbar-nav class="ml-auto">
+              <b-button
+                class="m-0 p-0"
+                variant="dark"
+                border-variant="dark"
+                v-b-tooltip.hover.left="'Edit comment'"
+                @click="edit = !edit"
+              >
+                <b-icon icon="pencil-square"></b-icon>
+              </b-button>
 
-          <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-
-          <!-- Right aligned nav items -->
-          <b-navbar-nav class="ml-auto">
-            <b-button
-              variant="outline-light"
-              v-b-tooltip.hover
-              title="Edit comment"
-              @click="editForm"
-            >
-              <b-icon icon="pencil-square"></b-icon>
-            </b-button>
-
-            <b-button variant="outline-light" v-b-tooltip.hover title="Delete comment">
-              <b-icon icon="x" aria-hidden="true"></b-icon>
-            </b-button>
-          </b-navbar-nav>
+              <b-button
+                class="m-0 p-0"
+                variant="dark"
+                border-variant="dark"
+                v-b-tooltip.hover.right="'Delete comment'"
+              >
+                <b-icon icon="x-square-fill" aria-hidden="true"></b-icon>
+              </b-button>
+            </b-navbar-nav>
+          </template>
         </b-navbar>
       </b-card-header>
 
       <b-card-body class="text-left">
         <template v-if="edit">
-          <comment-form v-bind:body.sync="comment.body" v-bind:edit.sync="edit"/>
+          <comment-form v-bind:body.sync="comment.body" v-bind:edit.sync="edit" />
         </template>
 
         <template v-else>
@@ -35,7 +40,7 @@
         </template>
       </b-card-body>
       <template v-slot:footer>
-        <small class="text-muted">{{ footer }}</small>
+        <small class="text-muted p-0 m-0">{{ footer }}</small>
       </template>
     </b-card>
   </div>
@@ -49,11 +54,15 @@ export default {
     CommentForm
   },
 
+  props: {
+    cinfo: { type: Object, default: null }
+  },
+
   data() {
     return {
       edit: false,
       comment: {
-        author: "Comment author",
+        author: { uuid: "1", username: "Comment author" },
         body: "Somebody once told me",
         created: "created date",
         edited: "edited date"
@@ -61,14 +70,21 @@ export default {
     };
   },
 
-  methods: {
-    editForm(event) {
-      event.preventDefault();
-      this.edit = !this.edit;
-    }
-  },
+  methods: {},
 
   computed: {
+    isLogged() {
+      return this.$store.getters.isLoggedIn;
+    },
+
+    isOwner() {
+      return (
+        this.isLogged &&
+        this.cinfo !== null &&
+        this.$store.getters.username === this.cinfo.user
+      );
+    },
+
     footer() {
       return this.comment.created === this.comment.edited
         ? `Created at ${this.comment.created}`
