@@ -1,21 +1,25 @@
 <template>
   <div id="navbar">
     <b-navbar toggleable="lg" type="dark" variant="dark">
-
-      <b-navbar-brand href="#">News for Hackers</b-navbar-brand>
+      <b-navbar-brand :to="{ name: 'Home' }">News for Hackers</b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item href="#">Home</b-nav-item>
-          <b-nav-item v-b-toggle="sidebar_name">Feeds</b-nav-item>
+          <b-nav-item :to="{ name: 'Home'}">Home</b-nav-item>
+          <b-nav-item v-if="islogged" v-b-toggle="FeedsSidaberID">Feeds</b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
-          <b-nav-item href="#">Sign In</b-nav-item>
-          <b-nav-item href="#">Sign Up</b-nav-item>
-          <b-nav-item href="#">Sign Out</b-nav-item>
+          <template v-if="islogged">
+            <b-nav-item @click="logout">Sign Out</b-nav-item>
+          </template>
+
+          <template v-else>
+            <b-nav-item :to="{ name: 'Login' }">Sign In</b-nav-item>
+            <b-nav-item :to="{ name: 'Register' }">Sign Up</b-nav-item>
+          </template>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
@@ -24,10 +28,31 @@
 
 <script>
 export default {
-    data () {
-      return {
-        sidebar_name: 'sidebar-feeds'
-      }
+  name: "Navbar",
+
+  props: {
+    islogged: { type: Boolean }
+  },
+
+  data() {
+    return {
+      FeedsSidaberID: "sidebar-feeds"
+    };
+  },
+
+  methods: {
+    logout(event) {
+      event.preventDefault();
+
+      this.$store
+        .dispatch("logout")
+        .then(() => {
+          this.$router.push("/");
+        })
+        .catch(error => {
+          console.error(error);
+        });
     }
-}
+  }
+};
 </script>
