@@ -2,6 +2,7 @@
   <div id="sidebar">
     <b-sidebar id="sidebar-feeds" title="Feeds" bg-variant="dark" text-variant="light" shadow>
       <div class="px-3 py-2">
+        <feed-form />
         <div role="tablist">
           <feed v-for="(feed, index) in feeds" :key="feed.title" :feed="feed" :index="index" />
         </div>
@@ -12,10 +13,12 @@
 
 <script>
 import Feed from "../rssfeed/Feed.vue";
+import FeedForm from "../rssfeed/FeedForm.vue";
+
 export default {
   name: "feeds",
 
-  components: { Feed },
+  components: { Feed, FeedForm },
 
   props: {},
 
@@ -24,11 +27,16 @@ export default {
       feeds: [
         {
           title: "Memes title",
-          items: [{ title: "Memes", url: "memes.com" }]
+          url: "memes.com",
+          items: [
+            { title: "Memes", url: "https://memes.com" },
+            { title: "джигурда", url: "https://джигурда.рф" }
+          ]
         },
         {
           title: "Example title",
-          items: [{ title: "Example", url: "example.com" }]
+          url: "example.com",
+          items: [{ title: "Example", url: "https://example.com" }]
         }
       ]
     };
