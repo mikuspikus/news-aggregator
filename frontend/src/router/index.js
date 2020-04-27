@@ -1,8 +1,11 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
 
 import Index from '../views/Index.vue'
+import LoginView from '../views/Login.vue'
+import RegisterView from '../views/Register.vue'
+import UserView from '../views/User.vue'
+import NewsSingleView from '../views/News.vue'
 
 Vue.use(VueRouter)
 
@@ -10,12 +13,31 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Index
   },
   {
-    path: '/index',
-    name: ' Index',
-    component: Index
+    path: '/register',
+    name: 'Register',
+    component: RegisterView
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: LoginView
+  },
+  {
+    path: '/users/:uuid',
+    name: 'User',
+    component: UserView
+  },
+  {
+    path: '/news/:uuid',
+    name: 'NewsSingle',
+    component: NewsSingleView,
+    // meta: {
+
+    // }
+
   },
   {
     path: '/about',
@@ -29,7 +51,19 @@ const routes = [
 
 const router = new VueRouter({
   mode: 'history',
-  routes:  routes
+  routes: routes
 })
+
+// router.beforeEach((to, matched, next) => {
+//   if (to.matched.some(record => record.meta.requiresAuthorization)) {
+//     if (store.getters.isLoggedIn) {
+//       next()
+//       return
+//     }
+//     next('/login')
+//   } else {
+//     next()
+//   }
+// })
 
 export default router

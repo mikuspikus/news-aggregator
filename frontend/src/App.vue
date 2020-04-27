@@ -1,12 +1,26 @@
 <template>
   <div id="app">
-    <!-- <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div> -->
+    <navbar :islogged="isLoggedIn"/>
+    <feeds v-if="isLoggedIn"/>
+
     <router-view/>
   </div>
 </template>
+
+<script>
+import Navbar from '../src/components/utility/Navbar.vue'
+import Feeds from '../src/components/rssfeed/Feeds.vue'
+
+export default {
+  components: {Navbar, Feeds},
+
+  computed: {
+    isLoggedIn () {
+      return !this.$store.getters.isLoggedIn;
+    }
+  }
+}
+</script>
 
 <style>
 #app {
