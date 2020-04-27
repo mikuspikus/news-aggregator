@@ -15,8 +15,8 @@
         <b-form-input id="input-url" v-model="form.url" type="url" required placeholder="Enter URL"></b-form-input>
       </b-form-group>
 
-      <b-button type="submit" variant="outline-dark">Submit</b-button>
-      <b-button type="reset" variant="dark">Reset</b-button>
+      <b-button class="mr-1" type="submit" variant="outline-dark">Submit</b-button>
+      <b-button class="ml-1" type="reset" variant="dark">Reset</b-button>
     </b-form>
   </div>
 </template>
