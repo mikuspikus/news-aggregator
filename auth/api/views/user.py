@@ -43,7 +43,11 @@ class AuthTokenView(BaseView):
 
     def get(self, request: Request, format: str = "json") -> Response:
         self.info(request, f"checking logged-in user token {request.auth}")
-        return Response(data= {'uuid' : request.user.uuid, 'is_staff': request.user.is_staff},status=st.HTTP_200_OK)
+        return Response(
+            data={"uuid": request.user.uuid, "is_staff": request.user.is_staff, 'username': request.user.username},
+            status=st.HTTP_200_OK,
+        )
+
 
 class UserView(BaseView):
     model = AuthUser
@@ -79,4 +83,12 @@ class UserLoginView(BaseView):
 
         token, created = self.token_model.objects.get_or_create(user=request.user)
 
-        return Response(data={"token": token.token, 'uuid' : request.user.uuid, 'is_superuser': request.user.is_superuser}, status=st.HTTP_200_OK)
+        return Response(
+            data={
+                "token": token.token,
+                "uuid": request.user.uuid,
+                "username": request.user.username,
+                "is_superuser": request.user.is_superuser,
+            },
+            status=st.HTTP_200_OK,
+        )
