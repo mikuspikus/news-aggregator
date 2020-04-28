@@ -21,11 +21,11 @@
         <b-col />
       </b-row>
       <template v-for="shortnews in news">
-        <b-row :key="shortnews.uuid">
+        <b-row :key="shortnews.id">
           <b-col />
           <b-col cols="8">
             <news-short
-              :uuid="shortnews.uuid"
+              :uuid="shortnews.id"
               :title="shortnews.title"
               :url="shortnews.url"
               :created="shortnews.created"
@@ -47,34 +47,29 @@ export default {
 
   components: { NewsShort, NewsForm },
 
-  computed:{
+  computed: {
     isLoggedIn() {
       return this.$store.getters.isLoggedIn;
     }
   },
 
+  created() {
+    this.$httpnews({ url: "news", methos: "GET" })
+      .then(response => {
+        this.news = response.data;
+      })
+      .catch(error => {
+        this.$bvToast.toast(error.message, {
+          title: "Error",
+          autoHideDelay: 5000,
+          toaster: "b-toaster-bottom-center"
+        });
+      });
+  },
+
   data() {
     return {
-      news: [
-        {
-          uuid: "1",
-          title: "Example title 1",
-          url: "example.com",
-          created: "27.4.2020"
-        },
-        {
-          uuid: "2",
-          title: "Example title 2",
-          url: "example.com",
-          created: "27.4.2020"
-        },
-        {
-          uuid: "3",
-          title: "Example title 3",
-          url: "example.com",
-          created: "27.4.2020"
-        }
-      ]
+      news: []
     };
   }
 };
