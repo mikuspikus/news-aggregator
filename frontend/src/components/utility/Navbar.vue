@@ -7,7 +7,7 @@
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
           <b-nav-item :to="{ name: 'Home'}">Home</b-nav-item>
-          <b-nav-item v-if="islogged" v-b-toggle="FeedsSidaberID">Feeds</b-nav-item>
+          <b-nav-item v-if="islogged" v-b-toggle="FeedsSidebarID">Feeds</b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
@@ -36,7 +36,7 @@ export default {
 
   data() {
     return {
-      FeedsSidaberID: "sidebar-feeds"
+      FeedsSidebarID: "sidebar-feeds"
     };
   },
 
@@ -47,10 +47,18 @@ export default {
       this.$store
         .dispatch("logout")
         .then(() => {
-          this.$router.push("/");
+          this.$router
+            .push({ name: "Home" })
+            // pushing to the same route raises error
+            // silencing it here
+            .catch(() => {});
         })
         .catch(error => {
-          console.error(error);
+          this.$bvToast.toast(error, {
+            title: "Error",
+            autoHideDelay: 5000,
+            toaster: "b-toaster-bottom-center"
+          });
         });
     }
   }
