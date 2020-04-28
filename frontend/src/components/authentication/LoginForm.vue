@@ -15,7 +15,7 @@
             v-model="form.username"
             type="text"
             required
-            placeholder="Enter usernmae"
+            placeholder="Enter username"
           ></b-form-input>
         </b-form-group>
 
@@ -29,8 +29,8 @@
           ></b-form-input>
         </b-form-group>
 
-        <b-button type="submit" variant="outline-dark">Sign in</b-button>
-        <b-button type="reset" variant="dark">Reset</b-button>
+        <b-button class="mr-1" type="submit" variant="outline-dark">Sign in</b-button>
+        <b-button class="ml-1" type="reset" variant="dark">Reset</b-button>
       </b-form>
     </b-card>
   </div>
@@ -53,6 +53,19 @@ export default {
   methods: {
     onSubmit(event) {
       event.preventDefault();
+
+      let username = this.form.username;
+      let password = this.form.pwd;
+      this.$store
+        .dispatch("login", { username, password })
+        .then(() => this.$router.push("/"))
+        .catch(error => {
+          this.$bvToast.toast(error, {
+            title: "Error",
+            autoHideDelay: 5000,
+            toaster: "b-toaster-bottom-center"
+          });
+        });
     },
 
     onReset(event) {

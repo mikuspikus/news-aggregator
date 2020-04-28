@@ -53,8 +53,8 @@
           ></b-form-input>
         </b-form-group>
 
-        <b-button type="submit" variant="outline-dark">Sign up</b-button>
-        <b-button type="reset" variant="dark">Reset</b-button>
+        <b-button class="mr-1" type="submit" variant="outline-dark">Sign up</b-button>
+        <b-button class="ml-1" type="reset" variant="dark">Reset</b-button>
       </b-form>
     </b-card>
   </div>
@@ -90,7 +90,20 @@ export default {
         return;
       }
 
-      this.$router.go(-1);
+      const username = this.form.username;
+      const password = this.form.pwd;
+      const email = this.form.email;
+
+      this.$store
+        .dispatch("register", { username, password, email })
+        .then(() => this.$router.push("/"))
+        .catch(error => {
+          this.$bvToast.toast(error.message, {
+            title: "Error",
+            autoHideDelay: 5000,
+            toaster: "b-toaster-bottom-center"
+          });
+        });
     },
 
     onReset(event) {
