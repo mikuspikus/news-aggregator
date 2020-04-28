@@ -16,7 +16,7 @@ from generic.views import BaseView
 
 from rest_framework.views import Request, Response
 import rest_framework.status as st
-
+from rest_framework.permissions import IsAuthenticated
 
 class UsersView(BaseView):
     model = AuthUser
@@ -40,6 +40,7 @@ class UsersView(BaseView):
 
 class AuthTokenView(BaseView):
     authentication_classes = (UserTokenAuthentication,)
+    permission_classes = (IsAuthenticated, )
 
     def get(self, request: Request, format: str = "json") -> Response:
         self.info(request, f"checking logged-in user token {request.auth}")
