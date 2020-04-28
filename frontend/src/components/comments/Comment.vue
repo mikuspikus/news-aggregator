@@ -3,7 +3,9 @@
     <b-card class="text-left m-0 p-0" no-body>
       <b-card-header header-border-variant="dark" header-bg-variant="dark" class="m-0 p-0">
         <b-navbar type="dark">
-          <b-navbar-brand :to="{name: 'User', params: {uuid: comment.author.uuid}}">{{ comment.author.username }}</b-navbar-brand>
+          <b-navbar-brand
+            :to="{name: 'User', params: {uuid: comment.author}}"
+          >{{ user.username }}</b-navbar-brand>
           <template v-if="isOwner">
             <!-- Right aligned nav items -->
             <b-navbar-nav class="ml-auto">
@@ -32,7 +34,15 @@
 
       <b-card-body class="text-left">
         <template v-if="edit">
-          <comment-form v-bind:body.sync="comment.body" v-bind:edit.sync="edit" />
+          <comment-edit-form
+            :id="comment.id"
+            :user_uuid="comment.author"
+            :news_uuid="comment.news"
+
+            :edited.sync="comment.edited"
+            :body.sync="comment.body"
+            :edit.sync="edit"
+          />
         </template>
 
         <template v-else>
@@ -47,30 +57,59 @@
 </template>
 
 <script>
-import CommentForm from "../comments/CommentForm.vue";
+import CommentEditForm from "../comments/CommentEditForm.vue";
 
 export default {
   components: {
-    CommentForm
+    CommentEditForm
   },
 
   props: {
-    cinfo: { type: Object, default: null }
+    id: Number,
+    user_uuid: String,
+    news_uuid: String,
+    body: String,
+    created: String,
+    edited: String
   },
 
   data() {
     return {
       edit: false,
       comment: {
-        author: { uuid: "1", username: "Comment author" },
-        body: "Somebody once told me",
-        created: "created date",
-        edited: "edited date"
-      }
+        id: this.id,
+        author: this.user_uuid,
+        news: this.news_uuid,
+        body: this.body,
+        created: this.created,
+        edited: this.edited
+      },
+      user: {}
     };
   },
 
-  methods: {},
+  created() {
+    this.fetchComment();
+  },
+
+  methods: {
+    fetchComment() {
+      this.$httpuser({
+        url: `users/${this.comment.author}`,
+        method: "GET"
+      })
+        .then(response => {
+          this.user = response.data;
+        })
+        .catch(error => {
+          this.$bvToast.toast(error.message, {
+            title: "Fetch comment",
+            autoHideDelay: 5000,
+            toaster: "b-toaster-bottom-center"
+          });
+        });
+    }
+  },
 
   computed: {
     isLogged() {
@@ -78,11 +117,7 @@ export default {
     },
 
     isOwner() {
-      return (
-        this.isLogged &&
-        this.cinfo !== null &&
-        this.$store.getters.username === this.cinfo.user
-      );
+      return this.isLogged && this.$store.getters.uuid === this.comment.author;
     },
 
     footer() {
