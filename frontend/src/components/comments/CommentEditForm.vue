@@ -25,56 +25,64 @@
 
 <script>
 export default {
-  name: "comment-form",
+  name: "comment-edit-form",
 
   props: {
-    user_uuid: { type: String },
-    news_uuid: { type: String }
+    id: Number,
+    user_uuid: String,
+    news_uuid: String,
+    edited: String,
+    body: String,
+    edit: Boolean
   },
 
   data() {
     return {
       show: true,
       form: {
-        body: ""
+        body: this.body
       }
     };
   },
 
   methods: {
-    post(comment) {
+    patch(comment) {
       this.$httpcomment({
-        url: "comments",
+        url: `comments/${this.id}`,
         data: comment,
-        method: "POST"
+        method: "PATCH"
       })
-        .then(() => {
-          this.$emit("reload-comments");
+        .then(response => {
+          this.$emit("update:body", response.data.body);
+          this.$emit("update:edited", response.data.edited);
+          this.$emit("update:edit", false);
         })
-        .catch();
+        .catch(error => {
+          this.$bvToast.toast(error.message, {
+            title: "Editing error",
+            autoHideDelay: 5000,
+            toaster: "b-toaster-bottom-center"
+          });
+        });
     },
 
     onSubmit(event) {
       event.preventDefault();
 
-      // this.$http.send
-
-      this.$emit("update:body", this.form.body);
-      this.$emit("update:edit", false);
-
       const comment = {
+        id: this.id,
         author: this.user_uuid,
         news: this.news_uuid,
         body: this.form.body
       };
 
-      this.post(comment);
+      this.patch(comment);
     },
 
     onReset(event) {
       event.preventDefault();
 
-      this.form.body = "";
+      this.form.body = this.body;
 
       this.show = false;
       // magic trick to reset/clear native browser form validation state
