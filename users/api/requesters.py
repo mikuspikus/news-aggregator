@@ -52,7 +52,6 @@ def authenticate(token: str) -> Tuple[dict, int]:
 
     return response.json(), response.status_code
 
-
 def token(id: str, secret: str) -> Tuple[dict, int]:
     try:
         response = base.post(
