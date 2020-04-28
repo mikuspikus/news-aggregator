@@ -88,8 +88,8 @@ class SingleNewsView(BaseNewsView):
 
         obj = self.get_object(request, pk)
         serializer_ = self.serializer(instance=obj)
-
-        self.send_task(action = 'GET', user = request.auth.get('uuid'), output = serializer_.data)
+        user = request.auth.get('uuid') if request.auth else None
+        self.send_task(action = 'GET', user = user, output = serializer_.data)
 
         return Response(data=serializer_.data, status=st.HTTP_200_OK)
 
@@ -131,7 +131,7 @@ class MultiNewsView(BaseNewsView):
     permission_classes = (IsAuthenticatedFor,)
     authentication_classes = (TokenAuthentication,)
 
-    def post(self, request: Request) -> Response:
+    def post(self, request: Request, format: str = 'json') -> Response:
         self.info(request, f'adding object')
 
         serializer_ = self.serializer(data=request.data)
@@ -149,7 +149,7 @@ class MultiNewsView(BaseNewsView):
         self.send_task(action = 'POST', user = request.auth.get('uuid'), output = serializer_.errors)
         return Response(data=serializer_.errors, status=st.HTTP_400_BAD_REQUEST)
 
-    def get(self, request: Request) -> Response:
+    def get(self, request: Request, ) -> Response:
         self.info(request, f'request objects')
 
         row_s_ = self.model.objects.all()

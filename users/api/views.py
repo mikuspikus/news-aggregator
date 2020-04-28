@@ -38,8 +38,8 @@ class UserView(UserBaseView):
 
         obj = self.get_object(request, pk)
         serializer_ = self.serializer(instance=obj)
-
-        self.send_task(action = 'GET', user = request.auth.get('uuid'), output = serializer_.data)
+        user = request.auth.get('uuid') if request.auth else None
+        self.send_task(action = 'GET', user = user, output = serializer_.data)
 
         return Response(data=serializer_.data, status=st.HTTP_200_OK)
 
