@@ -26,62 +26,41 @@ export default {
   name: "news-form",
 
   props: {
-    title: { type: String, default: null },
-    url: { type: String, default: null },
-    edit: { typr: Boolean },
-    uuid: { type: String, default: null }
+    news_uuid: String,
+    user_uuid: String,
+    title: String,
+    url: String,
+    edited: String,
+    edit: Boolean
   },
 
   data() {
     return {
       show: true,
       form: {
-        title: this.title !== null ? this.title : "",
-        url: this.url !== null ? this.url : ""
+        title: this.title,
+        url: this.url
       }
     };
   },
 
-  computed: {
-    isNew() {
-      return !(this.title || this.url || this.uuid);
-    }
-  },
-
   methods: {
-    post(data) {
-      this.$httpnews({
-        url: "news",
-        data: data,
-        method: "POST"
-      })
-        .then(response => {
-          this.$router.push({
-            name: "NewsSingle",
-            params: { uuid: response.data.uuid }
-          });
-        })
-        .catch(error => {
-          this.$bvToast.toast(error.message, {
-            title: "Error",
-            autoHideDelay: 5000,
-            toaster: "b-toaster-bottom-center"
-          });
-        });
-    },
-
     patch(data) {
       this.$httpnews({
-        url: `news/${this.uuid}`,
+        url: `news/${this.news_uuid}`,
         data: data,
         method: "PATCH"
       })
-        .then(() => {
-          this.$emit('reload')
+        .then(response => {
+          console.log(response);
+          this.$emit("update:title", response.data.title);
+          this.$emit("update:url", response.data.url);
+          this.$emit("update:edited", response.data.edited);
+          this.$emit("update:edit", false);
         })
         .catch(error => {
           this.$bvToast.toast(error.message, {
-            title: "Error",
+            title: "News editing",
             autoHideDelay: 5000,
             toaster: "b-toaster-bottom-center"
           });
@@ -90,22 +69,13 @@ export default {
 
     onSubmit(event) {
       event.preventDefault();
-
-      this.$emit("update:title", this.form.title);
-      this.$emit("update:url", this.form.url);
-      this.$emit("update:edit", false);
-
-      let news_data = {
-        title: this.form.title,
+      const news = {
+        id: this.news_uuid,
+        author: this.user_uuid,
         url: this.form.url,
-        author: this.$store.getters.uuid
+        title: this.form.title
       };
-
-      if (this.isNew) {
-        this.post(news_data);
-      } else {
-        this.patch(news_data);
-      }
+      this.patch(news);
     },
 
     onReset(event) {
