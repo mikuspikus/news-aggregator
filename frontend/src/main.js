@@ -10,10 +10,29 @@ import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
 import axios from 'axios'
 
-Vue.prototype.$http = axios
+const auth = axios.create({ baseURL: process.env.VUE_APP_AUTH_BASEURL + process.env.VUE_APP_VERSION + '/' });
+const user = axios.create({ baseURL: process.env.VUE_APP_USER_BASEURL + process.env.VUE_APP_VERSION + '/' });
+const comment = axios.create({ baseURL: process.env.VUE_APP_COMMENT_BASEURL + process.env.VUE_APP_VERSION + '/' });
+const rssparser = axios.create({ baseURL: process.env.VUE_APP_RSSPARSER_BASEURL + process.env.VUE_APP_VERSION + '/' });
+const news = axios.create({ baseURL: process.env.VUE_APP_NEWS_BASEURL + process.env.VUE_APP_VERSION + '/' });
+
+const keyword = 'Bearer'
 const token = localStorage.getItem('token')
 
-if (token) { Vue.prototype.$http.defaults.headers.common['Authorization'] = token; }
+if (token) {
+  axios.defaults.headers.common['Authorization'] = keyword + ' ' + token;
+  auth.defaults.headers.common['Authorization'] = keyword + ' ' + token;
+  user.defaults.headers.common['Authorization'] = keyword + ' ' + token;
+  comment.defaults.headers.common['Authorization'] = keyword + ' ' + token;
+  rssparser.defaults.headers.common['Authorization'] = keyword + ' ' + token;
+  news.defaults.headers.common['Authorization'] = keyword + ' ' + token;
+}
+
+Vue.prototype.$httpauth = auth
+Vue.prototype.$httpuser = user
+Vue.prototype.$httpcomment = comment
+Vue.prototype.$httprssparser = rssparser
+Vue.prototype.$httpnews = news
 
 // Install BootstrapVue
 Vue.use(BootstrapVue)
