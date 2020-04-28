@@ -14,6 +14,8 @@ from remoteauth.permissions import IsRemoteAuthenticated
 from .permissions import IsAuthorizedAndUser
 from generic.views import BaseView
 
+from .requesters import authenticate_credentials
+
 class UserBaseView(BaseView):
     celery = Celery()
     task = 'tasks.stats.user'
@@ -22,7 +24,7 @@ class UserBaseView(BaseView):
         self.celery.config_from_object(Config)
         super().__init__(**kwargs)
 
-    def send_task(self, action: str, user: UUID = None, input: dict = None, output: dict = None):
+    def send_task(self, action: str, user: str = None, input: dict = None, output: dict = None):
         self.celery.send_task(self.task, [user, action, input, output])
 
 
@@ -76,8 +78,8 @@ class UsersView(UserBaseView):
     model = User
     serializer = UserSerializer
 
-    permission_classes = [IsRemoteAuthenticated]
-    authentication_classes = [TokenAuthentication]
+    # permission_classes = [IsRemoteAuthenticated]
+    # authentication_classes = [TokenAuthentication]
 
     def post(self, request: Request) -> Response:
         self.info(request, f'adding object')
@@ -87,14 +89,20 @@ class UsersView(UserBaseView):
         if serializer_.is_valid():
             serializer_.save()
 
-            self.send_task(action = 'POST', user = request.auth.get('uuid'), output = serializer_.data)
+            self.send_task(action = 'POST', output = serializer_.data)
 
-            return Response(data=serializer_.data, status=st.HTTP_202_ACCEPTED)
+            response, code = authenticate_credentials(username = request.data['username'], password = request.data['password'])
+            data = {**serializer_.data}
+
+            if code == 200:
+                data['token'] = response['token']
+
+            return Response(data=data, status=st.HTTP_202_ACCEPTED)
 
         self.exception(
             request, f'not valid data for serializer : {serializer_.errors}')
 
-        self.send_task(action = 'POST', user = request.auth.get('uuid'), output = serializer_.errors)
+        self.send_task(action = 'POST', output = serializer_.errors)
         return Response(data=serializer_.errors, status=st.HTTP_400_BAD_REQUEST)
 
     def get(self, request: Request) -> Response:
