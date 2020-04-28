@@ -83,7 +83,7 @@ class CommentsView(CommentsBaseView):
 
         serializer_ = self.serializer(data=request.data)
 
-        if serializer_.is_valid(raise_exception=True):
+        if serializer_.is_valid():
             serializer_.save()
             self.send_task(action = 'POST', user = request.auth.get('uuid'), output = serializer_.data)
 
