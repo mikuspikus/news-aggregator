@@ -85,7 +85,8 @@ class CommentsView(CommentsBaseView):
 
         if serializer_.is_valid():
             serializer_.save()
-            self.send_task(action = 'POST', user = request.auth.get('uuid'), output = serializer_.data)
+            user = request.auth.get('uuid') if request.auth else None
+            self.send_task(action = 'POST', user = user, output = serializer_.data)
 
 
             return Response(data=serializer_.data, status=st.HTTP_201_CREATED)
@@ -105,6 +106,6 @@ class CommentsView(CommentsBaseView):
 
         serializer_ = self.serializer(row_s_, many=True)
         user = request.auth.get('uuid') if request.auth else None
-        self.send_task(name = 'GET', user = user, output = {'length' : len(serializer_.data)})
+        self.send_task(action = 'GET', user = user, output = {'length' : len(serializer_.data)})
 
         return Response(data=serializer_.data, status=st.HTTP_200_OK)
