@@ -28,7 +28,7 @@ class CommentsBaseView(BaseView):
         self.celery.send_task(self.task, [user, action, input, output])
 
 
-class CommentView(BaseView):
+class CommentView(CommentsBaseView):
     model = Comment
     serializer = CommentSerializer
     authentication_classes = (TokenAuthentication,)
@@ -71,7 +71,7 @@ class CommentView(BaseView):
         return Response(status=st.HTTP_204_NO_CONTENT)
 
 
-class CommentsView(BaseView):
+class CommentsView(CommentsBaseView):
     model = Comment
     serializer = CommentSerializer
 
