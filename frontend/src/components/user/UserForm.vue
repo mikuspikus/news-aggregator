@@ -2,7 +2,7 @@
   <div id="user-form">
     <b-card
       border-variant="dark"
-      :header="'User:' + uuid"
+      :header="uuid"
       header-text-variant="white"
       header-tag="header"
       header-bg-variant="dark"
@@ -77,15 +77,33 @@ export default {
       show: true,
       form: {
         username: "username",
-        uuid: "uuid",
         email: "email",
-        pwd: "pwd",
-        pwdconf: "pwdconf"
+        pwd: "",
+        pwdconf: ""
       }
     };
   },
 
+  created() {
+    this.fetchData();
+  },
+
   methods: {
+    fetchData() {
+      this.$httpuser({ url: `users/${this.uuid}`, method: "GET" })
+        .then(response => {
+          this.form.username = response.data.username
+          this.form.email = response.data.email
+        })
+        .catch(error => {
+          this.$bvToast.toast(error.message, {
+            title: "Error",
+            autoHideDelay: 5000,
+            toaster: "b-toaster-bottom-center"
+          });
+        });
+    },
+
     onSubmit(event) {
       event.preventDefault();
     },
