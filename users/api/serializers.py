@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
         new_user.set_password(password)
         new_user.save()
 
-        credentials = {'username' : validated_data['username'], 'password' : password, 'uuid' : new_user.id, 'is_staff': new_user.is_staff}
+        credentials = {'username' : validated_data['username'], 'password' : password, 'uuid' : str(new_user.id), 'is_staff': new_user.is_staff}
 
         response, code = send_credentials(credentials = credentials)
 
