@@ -103,7 +103,7 @@ class CommentsView(CommentsBaseView):
         if news:
             row_s_ = row_s_.filter(news = news)
 
-        serializer_ = self.serializer(data=row_s_, many=True)
+        serializer_ = self.serializer(row_s_, many=True)
         user = request.auth.get('uuid') if request.auth else None
         self.send_task(name = 'GET', user = user, output = {'length' : len(serializer_.data)})
 
