@@ -30,6 +30,7 @@
                 variant="light"
                 border-variant="light"
                 v-b-tooltip.hover.right="'Delete news'"
+                @click="deleteNews"
               >
                 <b-icon icon="x-square-fill" aria-hidden="true"></b-icon>
               </b-button>
@@ -66,6 +67,7 @@
 
 <script>
 import NewsEditForm from "../news/NewsEditForm.vue";
+import ehandler from "../../utility/errorhandler.js";
 
 export default {
   components: {
@@ -84,21 +86,46 @@ export default {
   },
 
   methods: {
+    deleteNews() {
+      this.$httpnews({
+        url: `news/${this.news_uuid}`,
+        method: "DELETE"
+      })
+        .then(() => {
+          this.$router.push({ name: "Home" });
+        })
+        .catch(error => {
+          ehandler.error(
+            this,
+            error,
+            "News delete Error",
+            "news (UUID: ${this.news_uuid}) not found"
+          );
+        });
+    },
+
     fetchData() {
-      this.$httpnews({ url: `news/${this.news_uuid}`, method: "GET" })
+      this.$httpnews({
+        url: `news/${this.news_uuid}`,
+        method: "GET"
+      })
         .then(response => {
           this.news = response.data;
 
-          this.$httpuser({ url: `users/${this.news.author}`, method: "GET" })
+          this.$httpuser({
+            url: `users/${this.news.author}`,
+            method: "GET"
+          })
             .then(response => {
               this.news.author = response.data;
             })
             .catch(error => {
-              this.$bvToast.toast(error.message, {
-                title: "Error",
-                autoHideDelay: 5000,
-                toaster: "b-toaster-bottom-center"
-              });
+              ehandler.error(this, error, 'News fetching Error', `news (UUID: ${this.news_uuid}) not found`)
+              // this.$bvToast.toast(error.message, {
+              //   title: "Error",
+              //   autoHideDelay: 5000,
+              //   toaster: "b-toaster-bottom-center"
+              // });
             });
         })
         .catch(error => {
@@ -108,10 +135,6 @@ export default {
             toaster: "b-toaster-bottom-center"
           });
         });
-    },
-    editForm(event) {
-      event.preventDefault();
-      this.edit = !this.edit;
     }
   },
 
