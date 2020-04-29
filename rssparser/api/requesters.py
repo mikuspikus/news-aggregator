@@ -8,6 +8,7 @@ from django.conf import settings
 from redis import StrictRedis
 
 __default_urls = {
+    'authenticate': 'http://localhost:8080/v0/users/logged-in',
     'login' : 'http://localhost:8080/v0/users/login',
     'auth-token': 'http://localhost:8080/v0/tokens',
     'send-credentials': 'http://localhost:8080/v0/users',
