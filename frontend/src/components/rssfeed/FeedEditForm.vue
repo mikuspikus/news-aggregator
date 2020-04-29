@@ -39,56 +39,79 @@
 </template>
 
 <script>
+import ehandler from '../../utility/errorhandler.js'
 export default {
   name: "feed-form",
 
   props: {
-    user_uuid: String
+    id: Number,
+    user_uuid: String,
+    name: String,
+    url: String,
+    edit: Boolean
   },
 
   data() {
     return {
       show: true,
       form: {
-        name: '',
-        url: ''
+        name: this.name,
+        url: this.url
       }
     };
   },
 
   methods: {
-    post(feed) {
+    patch(feed) {
       this.$httprssparser({
-        url: 'feeds',
+        url: `feeds/${this.id}`,
         data: feed,
-        method: "POST"
+        method: "PATCH"
       })
-        .then(() => {
-          this.$emit("reload-feeds");
+        .then(response => {
+          this.$emit("update:name", response.data.name);
+          this.$emit("update:url", response.data.url);
+          this.$emit("update:edit", false);
         })
         .catch(error => {
-          this.$bvToast.toast(error.message, {
-            title: "Feed adding error",
-            autoHideDelay: 5000,
-            toaster: "b-toaster-bottom-center"
-          });
+          ehandler.error(
+            this, error, "Feed editing error", "Feed not found"
+          );
+          // if (error.response) {
+          //   switch (error.response.status) {
+          //     case 401:
+          //       this.$router.push({ name: "Login" });
+          //       break;
+          //   }
+          // } else {
+          //   this.$bvToast.toast(error.message, {
+          //     title: "Feed editing error",
+          //     autoHideDelay: 5000,
+          //     toaster: "b-toaster-bottom-center"
+          //   });
+          // }
         });
     },
 
     onSubmit(event) {
       event.preventDefault();
+
       const feed = {
+        id: this.id,
         user: this.user_uuid,
         name: this.form.name,
         url: this.form.url
-      }
-      this.post(feed)
+      };
+
+      this.patch(feed);
     },
 
     onReset(event) {
       event.preventDefault();
-      this.form.name = "";
-      this.form.url = "";
+
+      this.form.name = this.name;
+      this.form.url = this.url;
+
       this.show = false;
       // magic trick to reset/clear native browser form validation state
       this.$nextTick(() => {

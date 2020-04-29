@@ -8,7 +8,7 @@
         role="tab"
       >
         <b-navbar type="dark">
-          <b-navbar-brand v-b-toggle="'accordion-' + index">{{ feed.title }}</b-navbar-brand>
+          <b-navbar-brand v-b-toggle="'accordion-' + index">{{ title }}</b-navbar-brand>
           <template v-if="isOwner">
             <!-- Right aligned nav items -->
             <b-navbar-nav class="ml-auto">
@@ -26,7 +26,7 @@
                 class="m-0 p-0"
                 variant="dark"
                 border-variant="dark"
-                @click="deleteItem"
+                @click="deleteFeed"
                 v-b-tooltip.hover.right="'Delete feed'"
               >
                 <b-icon icon="x-square-fill" aria-hidden="true"></b-icon>
@@ -36,17 +36,22 @@
         </b-navbar>
       </b-card-header>
       <template v-if="edit">
-        <feed-form :name.sync="feed.title" :url.sync="feed.url" :edit.sync="edit" />
+        <feed-edit-form
+          :id="id"
+          :user_uuid="userUUID"
+          :name.sync="title"
+          :url.sync="url"
+          :edit.sync="edit"
+        />
       </template>
 
       <template v-else>
-        <b-collapse :id="'accordion-' + index" visible accordion="my-accordion" role="tabpanel">
+        <b-collapse :id="'accordion-' + index" accordion="my-accordion" role="tabpanel">
           <b-card-body>
-            <b-link
-              v-for="fitem in feed.items"
-              :key="fitem.title"
-              :href="fitem.url"
-            >{{ fitem.title }}<br/></b-link>
+            <b-link v-for="fitem in feeditems" :key="fitem.title" :href="fitem.link">
+              {{ fitem.title }}
+              <br />
+            </b-link>
           </b-card-body>
         </b-collapse>
       </template>
@@ -55,35 +60,52 @@
 </template>
 
 <script>
-import FeedForm from "../rssfeed/FeedForm.vue";
+import FeedEditForm from "../rssfeed/FeedEditForm.vue";
 export default {
   name: "feed",
 
-  components: { FeedForm },
+  components: { FeedEditForm },
+
+  props: {
+    id: Number,
+    user_uuid: String,
+    index: Number,
+    title: String,
+    url: String,
+
+    entries: Object
+  },
 
   data() {
     return {
-      edit: false
-      // feed: {
-      //   title: "Example title",
-      //   items: [{ title: "Memes", url: "memes.com" }]
-      // }
+      edit: false,
+      feeditems: this.entries
     };
-  },
-
-  props: {
-    index: { Type: Number, default: 1 },
-    feed: { Type: Object, default: null }
   },
 
   computed: {
     isOwner() {
-      return true;
+      return this.$store.getters.uuid === this.user_uuid;
     }
   },
 
   methods: {
-    deleteItem() {}
+    deleteFeed() {
+      this.$httprssparser({
+        url: `feeds/${this.id}`,
+        method: "DELETE"
+      })
+        .then(() => {
+          this.$emit("delete-feed-by-index", this.index);
+        })
+        .catch(error => {
+          this.$bvToast.toast(error.message, {
+            title: "Feed deleting error",
+            autoHideDelay: 5000,
+            toaster: "b-toaster-bottom-center"
+          });
+        });
+    }
   }
 };
 </script>
