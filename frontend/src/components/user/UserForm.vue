@@ -69,41 +69,24 @@ export default {
   name: "user-form",
 
   props: {
-    uuid: { type: String }
+    uuid: String,
+    username: String,
+    email: String
   },
 
   data() {
     return {
       show: true,
       form: {
-        username: "username",
-        email: "email",
+        username: this.username,
+        email: this.email,
         pwd: "",
         pwdconf: ""
       }
     };
   },
 
-  created() {
-    this.fetchData();
-  },
-
   methods: {
-    fetchData() {
-      this.$httpuser({ url: `users/${this.uuid}`, method: "GET" })
-        .then(response => {
-          this.form.username = response.data.username
-          this.form.email = response.data.email
-        })
-        .catch(error => {
-          this.$bvToast.toast(error.message, {
-            title: "Error",
-            autoHideDelay: 5000,
-            toaster: "b-toaster-bottom-center"
-          });
-        });
-    },
-
     onSubmit(event) {
       event.preventDefault();
     },
