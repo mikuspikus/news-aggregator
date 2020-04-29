@@ -56,12 +56,6 @@ export default {
 
     onSubmit(event) {
       event.preventDefault();
-
-      // this.$http.send
-
-      this.$emit("update:body", this.form.body);
-      this.$emit("update:edit", false);
-
       const comment = {
         author: this.user_uuid,
         news: this.news_uuid,

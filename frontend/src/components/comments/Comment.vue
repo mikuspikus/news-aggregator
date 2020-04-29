@@ -3,9 +3,7 @@
     <b-card class="text-left m-0 p-0" no-body>
       <b-card-header header-border-variant="dark" header-bg-variant="dark" class="m-0 p-0">
         <b-navbar type="dark">
-          <b-navbar-brand
-            :to="{name: 'User', params: {uuid: comment.author}}"
-          >{{ user.username }}</b-navbar-brand>
+          <b-navbar-brand :to="{name: 'User', params: {uuid: comment.author}}">{{ user.username }}</b-navbar-brand>
           <template v-if="isOwner">
             <!-- Right aligned nav items -->
             <b-navbar-nav class="ml-auto">
@@ -38,7 +36,6 @@
             :id="comment.id"
             :user_uuid="comment.author"
             :news_uuid="comment.news"
-
             :edited.sync="comment.edited"
             :body.sync="comment.body"
             :edit.sync="edit"
@@ -58,6 +55,7 @@
 
 <script>
 import CommentEditForm from "../comments/CommentEditForm.vue";
+import ehandler from "../../utility/errorhandler.js";
 
 export default {
   components: {
@@ -65,6 +63,7 @@ export default {
   },
 
   props: {
+    index: Number,
     id: Number,
     user_uuid: String,
     news_uuid: String,
@@ -89,11 +88,27 @@ export default {
   },
 
   created() {
-    this.fetchComment();
+    this.fetchCommentAuthor();
   },
 
   methods: {
-    fetchComment() {
+    deleteComment() {
+      this.$httpcomment({
+        url: `comment/${this.id}`,
+        method: "DELETE"
+      })
+        .then(this.$emit("delete-comment-by-index", this.index))
+        .catch(error => {
+          ehandler.error(
+            this,
+            error,
+            "Comment delete error",
+            "comment has been already deleted"
+          );
+        });
+    },
+
+    fetchCommentAuthor() {
       this.$httpuser({
         url: `users/${this.comment.author}`,
         method: "GET"
@@ -102,11 +117,12 @@ export default {
           this.user = response.data;
         })
         .catch(error => {
-          this.$bvToast.toast(error.message, {
-            title: "Fetch comment",
-            autoHideDelay: 5000,
-            toaster: "b-toaster-bottom-center"
-          });
+          ehandler.error(this, error, "Comment author error", "reasons");
+          // this.$bvToast.toast(error.message, {
+          //   title: "Fetch comment",
+          //   autoHideDelay: 5000,
+          //   toaster: "b-toaster-bottom-center"
+          // });
         });
     }
   },

@@ -59,7 +59,7 @@ export default {
         })
         .catch(error => {
           this.$bvToast.toast(error.message, {
-            title: "Editing error",
+            title: "Comment editing error",
             autoHideDelay: 5000,
             toaster: "b-toaster-bottom-center"
           });
