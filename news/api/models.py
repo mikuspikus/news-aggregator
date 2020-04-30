@@ -22,6 +22,7 @@ class News(models.Model):
 
     class Meta:
         verbose_name_plural = "News"
+        ordering = ['created', 'score']
 
     def __str__(self) -> str:
         return f'"{self.title}" [{self.url}] by ({self.author})'
