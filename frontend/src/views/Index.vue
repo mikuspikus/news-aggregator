@@ -42,6 +42,14 @@
             <b-col />
           </b-row>
         </template>
+
+        <b-row class="mt-2">
+          <b-col />
+          <b-col cols="8" class="customPagination">
+            <b-pagination-nav align="fill" :link-gen="linkGen" :number-of-pages="total_pages"></b-pagination-nav>
+          </b-col>
+          <b-col />
+        </b-row>
       </template>
 
       <template v-else>
@@ -81,17 +89,31 @@ export default {
     }
   },
 
+  watch: {
+    "$route.query.page"(page) {
+      this.fetchNews(page);
+    }
+  },
+
   created() {
-    this.fetchNews();
+    this.fetchNews(this.page);
   },
 
   methods: {
-    fetchNews() {
-      
-      this.$httpnews({ url: "news", method: "GET" })
+    linkGen(pageNum) {
+      return pageNum === 1 ? "?" : `?page=${pageNum}`;
+    },
+
+    fetchNews(page) {
+      this.$httpnews({
+        url: `news`,
+        params: { page: page },
+        method: "GET"
+      })
         .then(response => {
           this.loading = false;
-          this.news = response.data;
+          this.news = response.data.results;
+          this.total_pages = response.data.total_pages;
         })
         .catch(error => {
           this.loading = false;
@@ -110,8 +132,36 @@ export default {
     return {
       loading: true,
       ok: true,
-      news: []
+      news: [],
+      total_pages: 1,
+      page: this.$route.query.page ? this.$route.query.page : 1
     };
   }
 };
 </script>
+<style>
+.pagination > li > a {
+  background-color: white;
+  color: #343a40;
+}
+
+.pagination > li > a:focus,
+.pagination > li > a:hover,
+.pagination > li > span:focus,
+.pagination > li > span:hover {
+  color: #343a40;
+  background-color: #eee;
+  border-color: #ddd;
+}
+
+.pagination > .active > a {
+  color: white;
+  background-color: #343a40 !Important;
+  border: solid 1px #343a40 !Important;
+}
+
+.pagination > .active > a:hover {
+  background-color: #343a40 !Important;
+  border: solid 1px #343a40;
+}
+</style>
