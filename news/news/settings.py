@@ -65,6 +65,10 @@ AUTHENTICATION_BACKENDS = [
     'api.backends.RemoteAuthBackend',
 ]
 
+REST_FRAMEWORK = {
+    'PAGE_SIZE': 1
+}
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
