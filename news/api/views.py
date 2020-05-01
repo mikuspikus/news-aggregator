@@ -42,6 +42,28 @@ class NewsVoteView(BaseNewsView):
     authentication_classes = (TokenAuthentication, )
     permission_classes = (IsRemoteAuthenticated, )
 
+    def get(self, request: Request, pk: UUID, format: str = 'json') -> Response:
+        self.info(
+            request, f"user {request.auth.get('uuid')}  asking for his votes to news {pk}")
+
+        news = self.get_object(request, pk)
+        user, created = self.user.objects.get_or_create(uuid = request.auth['uuid'])
+        response = {'upvoted': False, 'downvoted': False}
+
+        try:
+            vote = self.vote.objects.get(news=news, user=user)
+
+        except self.vote.DoesNotExist as error:
+            return Response(data = response, status = st.HTTP_200_OK)
+
+        if vote.is_up:
+            response['upvoted'] = True
+
+        else:
+            response['downvoted'] = True
+
+        return Response(data = response, status=st.HTTP_200_OK)
+
     def post(self, request: Request, pk: UUID, format: str = 'json') -> Response:
         self.info(request, f'change score of news with pk : {pk}')
 
@@ -76,7 +98,7 @@ class NewsVoteView(BaseNewsView):
         serializer = self.serializer(instance=news)
 
         self.send_task(action='POST', user=request.auth.get(
-            'uuid'), input=old_news_serializer.data, ouput=serializer.data)
+            'uuid'), input=old_news_serializer.data, output=serializer.data)
 
         return Response(data=serializer.data, status=st.HTTP_202_ACCEPTED)
 
