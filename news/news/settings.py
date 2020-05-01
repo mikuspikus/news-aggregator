@@ -66,7 +66,8 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 REST_FRAMEWORK = {
-    'PAGE_SIZE': 25
+    'PAGE_SIZE': 25,
+    'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S',
 }
 
 TEMPLATES = [
