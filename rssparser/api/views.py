@@ -27,18 +27,36 @@ class FeedBaseView(BaseView):
         self.celery.send_task(self.task, [user, action, input, output])
 
 
-class FeedParserView(FeedBaseView):
+class FeedParseView(FeedBaseView):
+    model = Feed
+    authentication_classes = (TokenAuthentication, )
+    permission_classes = (IsAuthorizedAndFeedOwner, )
+
+    def get(self, request: Request, pk: int, fromat: str = 'json') -> Response:
+        self.info(request, f"requested for parsed feed {pk}")
+
+        feed = self.get_object(request, pk)
+        parsed_feed = fp.parse(feed.url)
+
+        user = request.auth.get('uuid') if request.auth else None
+
+        self.send_task('GET', user, parsed_feed)
+
+        return Response(data=parsed_feed, status=st.HTTP_200_OK)
+
+
+class FeedsParseView(FeedBaseView):
     model = Feed
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthorizedAndFeedsOwner,)
 
-    def get_object(self, request: Request, user: UUID) -> Feed:
+    def get_objects(self, request: Request, user: UUID) -> Feed:
         return self.model.objects.filter(user=user)
 
     def get(self, request: Request, user: UUID, format: str = 'json') -> Response:
         self.info(request, f"requested for user ({user}) feeds")
 
-        feeds = self.get_object(request, user)
+        feeds = self.get_objects(request, user)
         parsed_feeds = [fp.parse(feed.url) for feed in feeds]
         user = request.auth.get('uuid') if request.auth else None
         self.send_task(action='GET', user=user, output={
