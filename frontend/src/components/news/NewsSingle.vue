@@ -1,67 +1,80 @@
 <template>
   <div id="news">
-    <b-card no-body class="text-left m-0 p-0">
-      <b-card-header header-border-variant="dark" header-bg-variant="light" class="m-0 p-0">
-        <b-navbar type="light">
-          <b-navbar-nav variant="light">
-            <b-navbar-brand class="ml-0 pl-0">{{ news.title }}</b-navbar-brand>
-            <b-nav-item disabled variant="light">by</b-nav-item>
-            <b-navbar-brand
-              :to="{ name: 'User', params: { uuid: news.author.id }}"
-              variant="light"
-            >{{ news.author.username }}</b-navbar-brand>
-          </b-navbar-nav>
+    <template v-if="news_status.loading">
+      <b-spinner class="mt-3" />
+    </template>
 
-          <template v-if="isOwner">
-            <!-- Right aligned nav items -->
-            <b-navbar-nav class="ml-auto">
-              <b-button
-                class="m-0 p-0"
+    <template v-else-if="news_status.ok">
+      <b-card no-body class="text-left m-0 p-0">
+        <b-card-header header-border-variant="dark" header-bg-variant="light" class="m-0 p-0">
+          <b-navbar type="light">
+            <b-navbar-nav variant="light">
+              <b-navbar-brand class="ml-0 pl-0">{{ news.title }}</b-navbar-brand>
+              <b-nav-item disabled variant="light">by</b-nav-item>
+              <b-navbar-brand
+                :to="{ name: 'User', params: { uuid: id }}"
                 variant="light"
-                border-variant="light"
-                v-b-tooltip.hover.left="'Edit news'"
-                @click="edit = !edit"
-              >
-                <b-icon icon="pencil-square"></b-icon>
-              </b-button>
-
-              <b-button
-                class="m-0 p-0"
-                variant="light"
-                border-variant="light"
-                v-b-tooltip.hover.right="'Delete news'"
-                @click="deleteNews"
-              >
-                <b-icon icon="x-square-fill" aria-hidden="true"></b-icon>
-              </b-button>
+              >{{ username }}</b-navbar-brand>
             </b-navbar-nav>
+
+            <template v-if="isOwner">
+              <!-- Right aligned nav items -->
+              <b-navbar-nav class="ml-auto">
+                <b-button
+                  class="m-0 p-0"
+                  variant="light"
+                  border-variant="light"
+                  v-b-tooltip.hover.left="'Edit news'"
+                  @click="edit = !edit"
+                >
+                  <b-icon icon="pencil-square"></b-icon>
+                </b-button>
+
+                <b-button
+                  class="m-0 p-0"
+                  variant="light"
+                  border-variant="light"
+                  v-b-tooltip.hover.right="'Delete news'"
+                  @click="deleteNews"
+                >
+                  <b-icon icon="x-square-fill" aria-hidden="true"></b-icon>
+                </b-button>
+              </b-navbar-nav>
+            </template>
+          </b-navbar>
+        </b-card-header>
+
+        <b-card-body class="text-left">
+          <template v-if="edit">
+            <news-edit-form
+              :news_uuid="news_uuid"
+              :user_uuid="userUUID"
+              :title.sync="news.title"
+              :url.sync="news.url"
+              :edited.sync="news.edited"
+              :edit.sync="edit"
+              v-on:reload-news="fetchData()"
+            />
           </template>
-        </b-navbar>
-      </b-card-header>
 
-      <b-card-body class="text-left">
-        <template v-if="edit">
-          <news-edit-form
-            :news_uuid="news_uuid"
-            :user_uuid="userUUID"
-            :title.sync="news.title"
-            :url.sync="news.url"
-            :edited.sync="news.edited"
-            :edit.sync="edit"
-            v-on:reload-news="fetchData()"
-          />
+          <template v-else>
+            <b-card-text>
+              <b-link :href="news.url">{{ news.url }}</b-link>
+            </b-card-text>
+          </template>
+        </b-card-body>
+        <template v-slot:footer>
+          <small class="text-muted">{{ footer }}</small>
         </template>
+      </b-card>
+    </template>
 
-        <template v-else>
-          <b-card-text>
-            <b-link :href="news.url">{{ news.url }}</b-link>
-          </b-card-text>
-        </template>
-      </b-card-body>
-      <template v-slot:footer>
-        <small class="text-muted">{{ footer }}</small>
-      </template>
-    </b-card>
+    <template v-else>
+      <b-jumbotron bg-variant="dark" text-variant="white" border-variant="dark" class="m-0 text-left" header>
+        <template v-slot:header>Error occuried</template>
+        <template v-slot:lead>News service is probably unavailible</template>
+      </b-jumbotron>
+    </template>
   </div>
 </template>
 
@@ -81,6 +94,7 @@ export default {
   data() {
     return {
       edit: false,
+      news_status: { loading: true, ok: true },
       news: { author: { id: null, username: null } }
     };
   },
@@ -95,12 +109,17 @@ export default {
           this.$router.push({ name: "Home" });
         })
         .catch(error => {
-          ehandler.error(
-            this,
-            error,
-            "News delete Error",
-            "news (UUID: ${this.news_uuid}) not found"
-          );
+          this.$bvToast.toast(error.message, {
+            title: "News deleting error",
+            autoHideDelay: 5000,
+            toaster: "b-toaster-bottom-center"
+          });
+          // ehandler.error(
+          //   this,
+          //   error,
+          //   "News delete Error",
+          //   "news (UUID: ${this.news_uuid}) not found"
+          // );
         });
     },
 
@@ -110,6 +129,9 @@ export default {
         method: "GET"
       })
         .then(response => {
+          this.news_status.loading = false;
+          this.news_status.ok = true;
+
           this.news = response.data;
 
           this.$httpuser({
@@ -120,20 +142,29 @@ export default {
               this.news.author = response.data;
             })
             .catch(error => {
-              ehandler.error(this, error, 'News fetching Error', `news (UUID: ${this.news_uuid}) not found`)
-              // this.$bvToast.toast(error.message, {
-              //   title: "Error",
-              //   autoHideDelay: 5000,
-              //   toaster: "b-toaster-bottom-center"
-              // });
+              // ehandler.error(this, error, 'News fetching Error', `news (UUID: ${this.news_uuid}) not found`)
+              this.$bvToast.toast(error.message, {
+                title: "User fetching error",
+                autoHideDelay: 5000,
+                toaster: "b-toaster-bottom-center"
+              });
             });
         })
         .catch(error => {
-          this.$bvToast.toast(error.message, {
-            title: "Error",
-            autoHideDelay: 5000,
-            toaster: "b-toaster-bottom-center"
-          });
+          this.news_status.loading = false;
+          this.news_status.ok = false;
+
+          ehandler.error(
+            this,
+            error,
+            "News fetching Error",
+            `news (UUID: ${this.news_uuid}) not found`
+          );
+          // this.$bvToast.toast(error.message, {
+          //   title: "News fetching error",
+          //   autoHideDelay: 5000,
+          //   toaster: "b-toaster-bottom-center"
+          // });
         });
     }
   },
@@ -143,15 +174,27 @@ export default {
   },
 
   computed: {
+    username() {
+      return this.news.author.username
+        ? this.news.author.username
+        : this.news.author;
+    },
+
+    id() {
+      return this.news.author.id ? this.news.author.id : this.news.author;
+    },
+
     userUUID() {
       return this.$store.getters.uuid;
     },
-    isLogged() {
+    isLoggedIn() {
       return this.$store.getters.isLoggedIn;
     },
 
     isOwner() {
-      return this.isLogged && this.$store.getters.uuid === this.news.author.id;
+      return (
+        this.isLoggedIn && this.$store.getters.uuid === this.news.author.id
+      );
     },
 
     footer() {

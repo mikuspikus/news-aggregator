@@ -3,7 +3,7 @@
     <b-card class="text-left m-0 p-0" no-body>
       <b-card-header header-border-variant="dark" header-bg-variant="dark" class="m-0 p-0">
         <b-navbar type="dark">
-          <b-navbar-brand :to="{name: 'User', params: {uuid: comment.author}}">{{ user.username }}</b-navbar-brand>
+          <b-navbar-brand :to="{name: 'User', params: {uuid: comment.author}}">{{ author }}</b-navbar-brand>
           <template v-if="isOwner">
             <!-- Right aligned nav items -->
             <b-navbar-nav class="ml-auto">
@@ -55,7 +55,7 @@
 
 <script>
 import CommentEditForm from "../comments/CommentEditForm.vue";
-import ehandler from "../../utility/errorhandler.js";
+// import ehandler from "../../utility/errorhandler.js";
 
 export default {
   components: {
@@ -99,12 +99,17 @@ export default {
       })
         .then(this.$emit("delete-comment-by-index", this.index))
         .catch(error => {
-          ehandler.error(
-            this,
-            error,
-            "Comment delete error",
-            "comment has been already deleted"
-          );
+          this.$bvToast.toast(error.message, {
+            title: "Comment delete error",
+            autoHideDelay: 5000,
+            toaster: "b-toaster-bottom-center"
+          });
+          // ehandler.error(
+          //   this,
+          //   error,
+          //   "Comment delete error",
+          //   "comment has been already deleted"
+          // );
         });
     },
 
@@ -117,17 +122,21 @@ export default {
           this.user = response.data;
         })
         .catch(error => {
-          ehandler.error(this, error, "Comment author error", "reasons");
-          // this.$bvToast.toast(error.message, {
-          //   title: "Fetch comment",
-          //   autoHideDelay: 5000,
-          //   toaster: "b-toaster-bottom-center"
-          // });
+          // ehandler.error(this, error, "Comment author error", "reasons");
+          this.$bvToast.toast(error.message, {
+            title: "Comment author fetching error",
+            autoHideDelay: 5000,
+            toaster: "b-toaster-bottom-center"
+          });
         });
     }
   },
 
   computed: {
+    author() {
+      return this.user.username ? this.user.username : this.user_uuid;
+    },
+
     isLogged() {
       return this.$store.getters.isLoggedIn;
     },
