@@ -31,7 +31,6 @@
                 :id="feed.id"
                 :title="feed.name"
                 :url="feed.url"
-                :entries="parsedfeeds[index].entries"
                 v-on:delete-feed-by-index="removeDeletedFeed"
               />
             </div>
@@ -76,24 +75,6 @@ export default {
       this.feeds.splice(index, 1);
     },
 
-    fetchFeedItems() {
-      this.$http.rssparser({
-        url: `feeds/${this.userUUID}`,
-        method: "GET"
-      })
-        .then(response => {
-          this.parsedfeeds = response.data;
-        })
-        .catch(error => {
-          ehandler.error(this, error, "Feed parsing Error", "feed was not found")
-          // this.$bvToast.toast(error.message, {
-          //   title: "Feed getting error",
-          //   autoHideDelay: 5000,
-          //   toaster: "b-toaster-bottom-center"
-          // });
-        });
-    },
-
     fetchFeeds() {
       this.$http.rssparser({
         url: "feeds",
@@ -103,7 +84,6 @@ export default {
         .then(response => {
           this.loading = false;
           this.feeds = response.data;
-          this.fetchFeedItems();
         })
         .catch(error => {
           this.loading = false;

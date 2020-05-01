@@ -48,8 +48,8 @@
       <template v-else>
         <b-collapse :id="'accordion-' + index" accordion="my-accordion" role="tabpanel">
           <b-card-body>
-            <b-link v-for="fitem in feeditems" :key="fitem.title" :href="fitem.link">
-              {{ fitem.title }}
+            <b-link v-for="entry in entries" :key="entry.title" :href="entry.link">
+              {{ entry.title }}
               <br />
             </b-link>
           </b-card-body>
@@ -71,16 +71,18 @@ export default {
     user_uuid: String,
     index: Number,
     title: String,
-    url: String,
-
-    entries: Array
+    url: String
   },
 
   data() {
     return {
       edit: false,
-      feeditems: this.entries
+      entries: []
     };
+  },
+
+  created() {
+    this.fetchParsedFeed();
   },
 
   computed: {
@@ -90,11 +92,28 @@ export default {
   },
 
   methods: {
+    fetchParsedFeed() {
+      this.$http
+        .rssparser({ url: `feeds/${this.id}/parse`, method: "GET" })
+        .then(response => {
+          console.log(response.data);
+          this.entries = response.data.entries;
+        })
+        .catch(error => {
+          this.$bvToast.toast(error.message, {
+            title: "Feed parsing error",
+            autoHideDelay: 5000,
+            toaster: "b-toaster-bottom-center"
+          });
+        });
+    },
+
     deleteFeed() {
-      this.$http.rssparser({
-        url: `feeds/${this.id}`,
-        method: "DELETE"
-      })
+      this.$http
+        .rssparser({
+          url: `feeds/${this.id}`,
+          method: "DELETE"
+        })
         .then(() => {
           this.$emit("delete-feed-by-index", this.index);
         })
