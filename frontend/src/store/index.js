@@ -12,7 +12,10 @@ export default new Vuex.Store({
   state: {
     status: '',
     token: localStorage.getItem('token') || '',
-    user: localStorage.getItem('username') && localStorage.getItem('uuid') ? { username: localStorage.getItem('username'), uuid: localStorage.getItem('uuid') } : {}
+    user: {
+      username: localStorage.getItem('username') || '',
+      uuid: localStorage.getItem('uuid') || ''
+    }
   },
 
   mutations: {
