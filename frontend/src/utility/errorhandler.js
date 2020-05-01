@@ -4,7 +4,7 @@ const ehandler = {
             const response = error.response
             switch (response.status) {
                 case 401:
-                    vue.$store.dispatch('logout');
+                    vue.$store.dispatch('logout', { vue: vue });
                     vue.$router.push({ name: 'Login' });
                     break;
 
