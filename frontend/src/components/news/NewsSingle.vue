@@ -10,7 +10,7 @@
           <b-navbar type="light">
             <b-navbar-nav variant="light">
               <b-navbar-brand class="ml-0 pl-0">{{ news.title }}</b-navbar-brand>
-              <b-nav-item disabled variant="light">by</b-nav-item>
+              <b-nav-text class="mr-3">by</b-nav-text>
               <b-navbar-brand
                 :to="{ name: 'User', params: { uuid: id }}"
                 variant="light"
