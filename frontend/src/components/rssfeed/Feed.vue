@@ -73,7 +73,7 @@ export default {
     title: String,
     url: String,
 
-    entries: Object
+    entries: Array
   },
 
   data() {
