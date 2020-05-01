@@ -152,25 +152,27 @@ export default {
     },
 
     voteaction(is_up) {
-      this.$httpnews({
-        url: `news/${this.news_uuid}/vote`,
-        data: { is_up: is_up },
-        // headers: { Authorization: `Bearer ${this.$store.getters.token}` },
-        method: "POST"
-      })
+      this.$http
+        .news({
+          url: `news/${this.news_uuid}/vote`,
+          data: { is_up: is_up },
+          // headers: { Authorization: `Bearer ${this.$store.getters.token}` },
+          method: "POST"
+        })
         .then(response => {
           this.news = response.data;
         })
         .catch(error => {
-          console.log(error)
+          console.log(error);
         });
     },
 
     deleteNews() {
-      this.$httpnews({
-        url: `news/${this.news_uuid}`,
-        method: "DELETE"
-      })
+      this.$http
+        .news({
+          url: `news/${this.news_uuid}`,
+          method: "DELETE"
+        })
         .then(() => {
           this.$router.push({ name: "Home" });
         })
@@ -190,10 +192,11 @@ export default {
     },
 
     fetchVote() {
-      this.$httpnews({
-        url: `news/${this.news_uuid}/vote`,
-        method: "GET"
-      })
+      this.$http
+        .news({
+          url: `news/${this.news_uuid}/vote`,
+          method: "GET"
+        })
         .then(response => {
           this.vote = response.data;
         })
@@ -201,10 +204,11 @@ export default {
     },
 
     fetchUser() {
-      this.$httpuser({
-        url: `users/${this.news.author}`,
-        method: "GET"
-      })
+      this.$http
+        .user({
+          url: `users/${this.news.author}`,
+          method: "GET"
+        })
         .then(response => {
           this.news.author = response.data;
         })
@@ -219,11 +223,12 @@ export default {
     },
 
     fetchNews() {
-      this.$httpnews({
-        url: `news/${this.news_uuid}`,
-        // headers: { Authorization: `Bearer ${this.$store.getters.token}` },
-        method: "GET"
-      })
+      this.$http
+        .news({
+          url: `news/${this.news_uuid}`,
+          // headers: { Authorization: `Bearer ${this.$store.getters.token}` },
+          method: "GET"
+        })
         .then(response => {
           this.news_status.loading = false;
           this.news_status.ok = true;
@@ -275,9 +280,7 @@ export default {
     },
 
     isOwner() {
-      return (
-        this.isLoggedIn && this.$store.getters.uuid === this.news.author.id
-      );
+      return this.isLoggedIn && this.$store.getters.uuid === this.id;
     },
 
     footer() {

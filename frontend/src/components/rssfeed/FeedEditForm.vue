@@ -63,7 +63,7 @@ export default {
 
   methods: {
     patch(feed) {
-      this.$httprssparser({
+      this.$http.rssparser({
         url: `feeds/${this.id}`,
         data: feed,
         method: "PATCH"

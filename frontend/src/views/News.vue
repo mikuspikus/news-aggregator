@@ -107,7 +107,7 @@ export default {
     },
 
     fetchComments() {
-      this.$httpcomment({
+      this.$http.comment({
         url: "comments",
         method: "GET",
         params: { news: this.uuid }

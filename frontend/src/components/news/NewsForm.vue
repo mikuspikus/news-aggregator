@@ -50,7 +50,7 @@ export default {
 
   methods: {
     post(data) {
-      this.$httpnews({
+      this.$http.news({
         url: "news",
         data: data,
         method: "POST"
@@ -71,7 +71,7 @@ export default {
     },
 
     patch(data) {
-      this.$httpnews({
+      this.$http.news({
         url: `news/${this.uuid}`,
         data: data,
         method: "PATCH"

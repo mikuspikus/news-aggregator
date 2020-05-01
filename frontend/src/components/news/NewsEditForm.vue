@@ -46,7 +46,7 @@ export default {
 
   methods: {
     patch(data) {
-      this.$httpnews({
+      this.$http.news({
         url: `news/${this.news_uuid}`,
         data: data,
         method: "PATCH"

@@ -105,7 +105,7 @@ export default {
     },
 
     fetchNews(page) {
-      this.$httpnews({
+      this.$http.news({
         url: `news`,
         params: { page: page },
         method: "GET"

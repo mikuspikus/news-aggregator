@@ -77,7 +77,7 @@ export default {
     },
 
     fetchFeedItems() {
-      this.$httprssparser({
+      this.$http.rssparser({
         url: `feeds/${this.userUUID}`,
         method: "GET"
       })
@@ -95,7 +95,7 @@ export default {
     },
 
     fetchFeeds() {
-      this.$httprssparser({
+      this.$http.rssparser({
         url: "feeds",
         params: { user: this.userUUID },
         method: "GET"

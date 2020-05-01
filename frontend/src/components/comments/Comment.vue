@@ -93,8 +93,8 @@ export default {
 
   methods: {
     deleteComment() {
-      this.$httpcomment({
-        url: `comment/${this.id}`,
+      this.$http.comment({
+        url: `comments/${this.id}`,
         method: "DELETE"
       })
         .then(this.$emit("delete-comment-by-index", this.index))
@@ -114,7 +114,7 @@ export default {
     },
 
     fetchCommentAuthor() {
-      this.$httpuser({
+      this.$http.user({
         url: `users/${this.comment.author}`,
         method: "GET"
       })

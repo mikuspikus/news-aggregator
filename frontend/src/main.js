@@ -28,11 +28,12 @@ if (token) {
   news.defaults.headers.common['Authorization'] = keyword + ' ' + token;
 }
 
-Vue.prototype.$httpauth = auth
-Vue.prototype.$httpuser = user
-Vue.prototype.$httpcomment = comment
-Vue.prototype.$httprssparser = rssparser
-Vue.prototype.$httpnews = news
+Vue.prototype.$http = {}
+Vue.prototype.$http.auth = auth
+Vue.prototype.$http.user = user
+Vue.prototype.$http.comment = comment
+Vue.prototype.$http.rssparser = rssparser
+Vue.prototype.$http.news = news
 
 // Install BootstrapVue
 Vue.use(BootstrapVue)

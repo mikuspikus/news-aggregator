@@ -91,7 +91,7 @@ export default {
 
   methods: {
     deleteFeed() {
-      this.$httprssparser({
+      this.$http.rssparser({
         url: `feeds/${this.id}`,
         method: "DELETE"
       })

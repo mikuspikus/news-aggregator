@@ -61,7 +61,7 @@ export default {
 
   methods: {
     fetchUserData() {
-      this.$httpuser({ url: `users/${this.uuid}`, method: "GET" })
+      this.$http.user({ url: `users/${this.uuid}`, method: "GET" })
         .then(response => {
           this.loading = false;
           this.user = response.data;

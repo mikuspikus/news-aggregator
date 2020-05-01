@@ -58,7 +58,7 @@ export default {
 
   methods: {
     post(feed) {
-      this.$httprssparser({
+      this.$http.rssparser({
         url: 'feeds',
         data: feed,
         method: "POST"
