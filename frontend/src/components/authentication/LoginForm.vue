@@ -57,10 +57,10 @@ export default {
       let username = this.form.username;
       let password = this.form.pwd;
       this.$store
-        .dispatch("login", { username, password })
+        .dispatch("login", { user: { username, password }, vue: this })
         .then(() => this.$router.push("/"))
         .catch(error => {
-          this.$bvToast.toast(error, {
+          this.$bvToast.toast(error.message, {
             title: "Error",
             autoHideDelay: 5000,
             toaster: "b-toaster-bottom-center"

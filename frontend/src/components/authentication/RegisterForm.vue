@@ -95,7 +95,10 @@ export default {
       const email = this.form.email;
 
       this.$store
-        .dispatch("register", { username, password, email })
+        .dispatch("register", {
+          user: { username, password, email },
+          vue: this
+        })
         .then(() => this.$router.push("/"))
         .catch(error => {
           this.$bvToast.toast(error.message, {

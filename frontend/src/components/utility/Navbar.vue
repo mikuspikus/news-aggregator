@@ -45,7 +45,7 @@ export default {
       event.preventDefault();
 
       this.$store
-        .dispatch("logout")
+        .dispatch("logout", { vue: this })
         .then(() => {
           this.$router
             .push({ name: "Home" })
