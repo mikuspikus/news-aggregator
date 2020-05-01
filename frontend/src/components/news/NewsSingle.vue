@@ -17,8 +17,36 @@
               >{{ username }}</b-navbar-brand>
             </b-navbar-nav>
 
+            <b-navbar-nav class="ml-auto">
+              <template v-if="isLoggedIn">
+                <b-button
+                  v-if="!vote.upvoted"
+                  class="m-0 p-0"
+                  variant="light"
+                  border-variant="light"
+                  v-b-tooltip.hover.top="'Upvote'"
+                  @click="upvote"
+                >
+                  <b-icon icon="arrow-up" />
+                </b-button>
+
+                <b-button
+                  v-if="!vote.downvoted"
+                  class="m-0 p-0"
+                  variant="light"
+                  border-variant="light"
+                  v-b-tooltip.hover.top="'Downvote'"
+                  @click="downvote"
+                >
+                  <b-icon icon="arrow-down" />
+                </b-button>
+              </template>
+              <b-nav-text>Score: {{ formatScore(news.score) }}</b-nav-text>
+            </b-navbar-nav>
+
             <template v-if="isOwner">
               <!-- Right aligned nav items -->
+
               <b-navbar-nav class="ml-auto">
                 <b-button
                   class="m-0 p-0"
@@ -70,7 +98,13 @@
     </template>
 
     <template v-else>
-      <b-jumbotron bg-variant="dark" text-variant="white" border-variant="dark" class="m-0 text-left" header>
+      <b-jumbotron
+        bg-variant="dark"
+        text-variant="white"
+        border-variant="dark"
+        class="m-0 text-left"
+        header
+      >
         <template v-slot:header>Error occuried</template>
         <template v-slot:lead>News service is probably unavailible</template>
       </b-jumbotron>
@@ -80,7 +114,7 @@
 
 <script>
 import NewsEditForm from "../news/NewsEditForm.vue";
-import ehandler from "../../utility/errorhandler.js";
+// import ehandler from "../../utility/errorhandler.js";
 
 export default {
   components: {
@@ -94,12 +128,44 @@ export default {
   data() {
     return {
       edit: false,
+      vote: { upvoted: false, downvoted: false },
       news_status: { loading: true, ok: true },
       news: { author: { id: null, username: null } }
     };
   },
 
   methods: {
+    formatScore(score) {
+      return score.toFixed(1);
+    },
+
+    upvote() {
+      this.voteaction(true);
+      this.vote.downvoted = false;
+      this.vote.upvoted = true;
+    },
+
+    downvote() {
+      this.voteaction(false);
+      this.vote.downvoted = true;
+      this.vote.upvoted = false;
+    },
+
+    voteaction(is_up) {
+      this.$httpnews({
+        url: `news/${this.news_uuid}/vote`,
+        data: { is_up: is_up },
+        // headers: { Authorization: `Bearer ${this.$store.getters.token}` },
+        method: "POST"
+      })
+        .then(response => {
+          this.news = response.data;
+        })
+        .catch(error => {
+          console.log(error)
+        });
+    },
+
     deleteNews() {
       this.$httpnews({
         url: `news/${this.news_uuid}`,
@@ -123,9 +189,39 @@ export default {
         });
     },
 
-    fetchData() {
+    fetchVote() {
+      this.$httpnews({
+        url: `news/${this.news_uuid}/vote`,
+        method: "GET"
+      })
+        .then(response => {
+          this.vote = response.data;
+        })
+        .catch();
+    },
+
+    fetchUser() {
+      this.$httpuser({
+        url: `users/${this.news.author}`,
+        method: "GET"
+      })
+        .then(response => {
+          this.news.author = response.data;
+        })
+        .catch(error => {
+          // ehandler.error(this, error, 'News fetching Error', `news (UUID: ${this.news_uuid}) not found`)
+          this.$bvToast.toast(error.message, {
+            title: "User fetching error",
+            autoHideDelay: 5000,
+            toaster: "b-toaster-bottom-center"
+          });
+        });
+    },
+
+    fetchNews() {
       this.$httpnews({
         url: `news/${this.news_uuid}`,
+        // headers: { Authorization: `Bearer ${this.$store.getters.token}` },
         method: "GET"
       })
         .then(response => {
@@ -134,43 +230,30 @@ export default {
 
           this.news = response.data;
 
-          this.$httpuser({
-            url: `users/${this.news.author}`,
-            method: "GET"
-          })
-            .then(response => {
-              this.news.author = response.data;
-            })
-            .catch(error => {
-              // ehandler.error(this, error, 'News fetching Error', `news (UUID: ${this.news_uuid}) not found`)
-              this.$bvToast.toast(error.message, {
-                title: "User fetching error",
-                autoHideDelay: 5000,
-                toaster: "b-toaster-bottom-center"
-              });
-            });
+          this.fetchUser();
+          this.fetchVote();
         })
         .catch(error => {
           this.news_status.loading = false;
           this.news_status.ok = false;
 
-          ehandler.error(
-            this,
-            error,
-            "News fetching Error",
-            `news (UUID: ${this.news_uuid}) not found`
-          );
-          // this.$bvToast.toast(error.message, {
-          //   title: "News fetching error",
-          //   autoHideDelay: 5000,
-          //   toaster: "b-toaster-bottom-center"
-          // });
+          // ehandler.error(
+          //   this,
+          //   error,
+          //   "News fetching Error",
+          //   `news (UUID: ${this.news_uuid}) not found`
+          // );
+          this.$bvToast.toast(error.message, {
+            title: "News fetching error",
+            autoHideDelay: 5000,
+            toaster: "b-toaster-bottom-center"
+          });
         });
     }
   },
 
   created() {
-    this.fetchData();
+    this.fetchNews();
   },
 
   computed: {
