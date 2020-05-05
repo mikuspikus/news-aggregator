@@ -28,7 +28,7 @@ REDIS_CONF = getattr(settings, 'REDIS_CONF', __default_redis_conf)
 STORAGE = StrictRedis(**REDIS_CONF)
 
 
-def authenticate_credentials(username: str, password: str):
+def authenticate_credentials(username: str, password: str) -> Tuple[dict, int]:
     try:
         response = base.post(
             url=URLS['login'],
