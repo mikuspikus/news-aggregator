@@ -2,13 +2,13 @@ from rest_framework.permissions import BasePermission
 from rest_framework.views import Request, APIView
 
 class IsAuthenticatedForMethods(BasePermission):
-    SAFE_METHODS = ('POST', )
+    SAFE_METHODS = ('POST', 'OPTIONS')
 
     def has_permission(self, request: Request, view: APIView) -> bool:
         return request.method in self.SAFE_METHODS or request.auth
 
 class IsAuthorizedAndOwner(BasePermission):
-    SAFE_METHODS = ('GET',)
+    SAFE_METHODS = ('GET', 'OPTIONS')
 
     def is_owner(self, obj, request: Request) -> bool:
         # return obj.author == user_uuid
