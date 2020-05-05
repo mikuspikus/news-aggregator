@@ -9,11 +9,11 @@ from django.conf import settings
 from redis import StrictRedis
 
 URLS = {
-    'auth-token': os.environ.get('auth-token', 'http://localhost:8080/v0/tokens'),
-    'user-stats': os.environ.get('user-stats', ''),
+    'auth-token': os.environ.get('auth-token', 'http://localhost:8083/v0/auth'),
+    'user-stats': os.environ.get('user-stats', 'http://localhost:8083/v0/users'),
     'news-stats': os.environ.get('news-stats', 'http://localhost:8083/v0/news'),
-    'comments-stats': os.environ.get('comments-stats', ''),
-    'rss-parser-stats': os.environ.get('rss-parser-stats', ''),
+    'comments-stats': os.environ.get('comments-stats', 'http://localhost:8083/v0/comments'),
+    'rss-parser-stats': os.environ.get('rss-parser-stats', 'http://localhost:8083/v0/rssparser'),
 }
 
 ID = os.environ.get('APPID', 'stats')

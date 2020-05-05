@@ -17,7 +17,7 @@ class StatView(BaseStatView):
 class UsersStatView(StatView):
     model = UsersStat
     serializer = UsersStatsSerializer
-    service = 'user'
+    service = 'users'
 
 
 class CommentsStatsView(StatView):
