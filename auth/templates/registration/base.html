@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+{% load rest_framework %}
+
+<html>
+  <head>
+    <meta charset = "utf-8">
+    <meta http-equiv = "X-UA-Compatible" content = "IE = edge">
+    <meta name = "viewport" content = "width = device-width, initial-scale = 1">
+
+    <link rel="icon" type="image/png" href="images/icons/favicon.ico" />
+
+    <link rel="stylesheet" type="text/css" href="/static/login/vendor/bootstrap/css/bootstrap.min.css">    
+    <link rel="stylesheet" type="text/css" href="/static/login/fonts/font-awesome-4.7.0/css/font-awesome.min.css">    
+    <link rel="stylesheet" type="text/css" href="/static/login/fonts/Linearicons-Free-v1.0.0/icon-font.min.css">    
+    <link rel="stylesheet" type="text/css" href="/static/login/vendor/animate/animate.css">    
+    <link rel="stylesheet" type="text/css" href="/static/login/vendor/css-hamburgers/hamburgers.min.css">    
+    <link rel="stylesheet" type="text/css" href="/static/login/vendor/animsition/css/animsition.min.css">    
+    <link rel="stylesheet" type="text/css" href="/static/login/vendor/select2/select2.min.css">    
+    <link rel="stylesheet" type="text/css" href="/static/login/vendor/daterangepicker/daterangepicker.css">    
+    <link rel="stylesheet" type="text/css" href="/static/login/css/util.css">
+    <link rel="stylesheet" type="text/css" href="/static/login/css/main.css">
+
+    <link href = "/static/bootstrap/css/bootstrap.min.css" rel = "stylesheet">
+    <link href = "/static/custom.css" rel = "stylesheet">
+
+    <title>
+    {% block title %}
+      Example of microservice implementation with Django 2 and DRF
+    {% endblock title %}
+    </title>
+  
+  </head>
+  <body>
+    {% block body %}
+    {% endblock body %}
+
+    <script src = "/static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/login/vendor/jquery/jquery-3.2.1.min.js" type="18e14ddbc6e0611a660086d9-text/javascript"></script>
+    <script src="/static/login/vendor/animsition/js/animsition.min.js" type="18e14ddbc6e0611a660086d9-text/javascript"></script>
+    <script src="/static/login/vendor/bootstrap/js/popper.js" type="18e14ddbc6e0611a660086d9-text/javascript"></script>
+    <script src="/static/login/vendor/bootstrap/js/bootstrap.min.js" type="18e14ddbc6e0611a660086d9-text/javascript"></script>
+    <script src="/static/login/vendor/select2/select2.min.js" type="18e14ddbc6e0611a660086d9-text/javascript"></script>
+    <script src="/static/login/vendor/daterangepicker/moment.min.js" type="18e14ddbc6e0611a660086d9-text/javascript"></script>
+    <script src="/static/login/vendor/daterangepicker/daterangepicker.js" type="18e14ddbc6e0611a660086d9-text/javascript"></script>
+    <script src="/static/login/vendor/countdowntime/countdowntime.js" type="18e14ddbc6e0611a660086d9-text/javascript"></script>
+    <script src="/static/login/js/main.js" type="18e14ddbc6e0611a660086d9-text/javascript"></script>
+
+    {% comment %} <script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13" type="18e14ddbc6e0611a660086d9-text/javascript"></script>
+    <script type="18e14ddbc6e0611a660086d9-text/javascript">
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-23581568-13');
+    </script>
+    <script src="https://ajax.cloudflare.com/cdn-cgi/scripts/7089c43e/cloudflare-static/rocket-loader.min.js" data-cf-settings="18e14ddbc6e0611a660086d9-|49" defer=""></script></body> {% endcomment %}
+  </body>
+</html>

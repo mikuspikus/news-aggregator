@@ -1,0 +1,34 @@
+{% extends 'registration/base.html' %}
+{% load static %}
+
+{% block title %}
+  Login
+{% endblock title %}
+
+{% block body %}
+
+<div class="limiter">
+    <div class="container-login100">
+      <div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-50">
+        <span class="login100-form-title p-b-33">
+          [AUTH] Service Login
+        </span>
+        <form class="login100-form validate-form" method = "post">
+          {% csrf_token %}
+
+          {{ form.as_p }}
+
+          <input type="hidden" name="next" value="{{ next }}">
+
+          <div class="container-login100-form-btn m-t-20">
+            <button type="submit" class="login100-form-btn">
+              Sign in
+            </button>
+          </div>
+
+        </form>
+    </div>
+  </div>
+</div>
+
+{% endblock body %}
