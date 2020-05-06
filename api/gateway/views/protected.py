@@ -1,18 +1,35 @@
-from generic.views import BaseView
-
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import Request, Response
 import rest_framework.status as st
 
 from gateway.authentication import OAuth2TokenAuthentication
+from generic.views import BaseView
+from generic.permissions import IsAuthorized
 import gateway.requesters as requesters
+
 
 from uuid import UUID
 
 
 class ProtectedBaseView(BaseView):
     authentication_classes = (OAuth2TokenAuthentication, )
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthorized, )
+
+
+class RefreshTokenView(ProtectedBaseView):
+    def post(self, request: Request, format: str = 'json') -> Response:
+        self.info(request, f"refreshing token")
+
+        token = request.data.get('refresh_token')
+        json, code = requesters.refresh_token_oauth2(token)
+        return Response(data=json, status=code)
+
+class RevokeTokenView(ProtectedBaseView):
+    def post(self, request: Request, format: str = 'json') -> Response:
+        self.info(request, "revoking token")
+
+        token = request.auth.get('token')
+        json, code = requesters.revoke_toke_oauth2(token)
+        return Response(data=json, status=code)
 
 
 class UserView(ProtectedBaseView):

@@ -8,7 +8,9 @@ from django.conf import settings
 from redis import StrictRedis
 
 __default_urls = {
-    'exchange-code': 'http://localhost:8080/oauth2/authorize',
+    'token-oauth2': 'http://localhost:8080/oauth2/token/',
+    'token-revoke-oauth2': 'http://localhost:8080/oauth2/revoke_token/',
+    'exchange-code-oauth2': 'http://localhost:8080/oauth2/token/',
     'authenticate-oauth2': 'http://localhost:8080/v0/oauth2/logged-in',
     'authenticate': 'http://localhost:8080/v0/users/logged-in',
     'login': 'http://localhost:8080/v0/users/login',
@@ -177,20 +179,58 @@ def vote_news(token: str, newsuuid: str, votedata: dict) -> Tuple[dict, int]:
 
     return response.json(), response.status_code
 
+def revoke_toke_oauth2(token: str) -> Tuple[dict, int]:
+    data = {
+        'token': token,
+        'client_id': CLIENT_ID,
+        'client_secret': CLIENT_SECRET,
+    }
+
+    try:
+        response = base.postf(
+            url=URLS['token-revoke-oauth2'],
+            data=data
+        )
+
+    except RequestException as error:
+        return base.process_error(error)
+
+    # empty response is exptected behavior
+    return response.json() if response.text else {}, response.status_code
+
+def refresh_token_oauth2(token: str) -> Tuple[dict, int]:
+    data = {
+        'client_id': CLIENT_ID,
+        'client_secret': CLIENT_SECRET,
+        'grant_type': 'refresh_token',
+        'refresh_token': token
+    }
+
+    try:
+        response = base.postf(
+            url=URLS['exchange-code-oauth2'],
+            data=data
+        )
+
+    except RequestException as error:
+        return base.process_error(error)
+
+    return response.json(), response.status_code
+
 
 def exchange_code_oauth2(code: str) -> Tuple[dict, int]:
     # possible error bacause base.post uses 'json' not 'data' argument (content-type not xxx-form-encoded)
     # try with post(data = data)
     data = {
-        'grant_type': 'authorization_code',
         'client_id': CLIENT_ID,
         'client_secret': CLIENT_SECRET,
+        'grant_type': 'authorization_code',
         'code': code
     }
 
     try:
-        response = base.post(
-            url=URLS['exchange-code'],
+        response = base.postf(
+            url=URLS['exchange-code-oauth2'],
             data=data
         )
 
