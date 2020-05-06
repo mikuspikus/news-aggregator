@@ -3,7 +3,7 @@ from queueconfig.celeryconfig import Config
 
 from .models import User
 from .serializers import UserSerializer
-from .authentication import TokenAuthentication
+from .authentication import TokenAuthentication, OAuth2TokenAuthentication
 
 from rest_framework.views import APIView, Request, Response
 import rest_framework.status as st
@@ -17,6 +17,7 @@ from generic.views import BaseView
 from .requesters import authenticate_credentials
 
 class UserBaseView(BaseView):
+    authentication_classes = (TokenAuthentication, OAuth2TokenAuthentication)
     celery = Celery()
     task = 'tasks.stats.user'
 
