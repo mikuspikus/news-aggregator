@@ -6,6 +6,7 @@ import rest_framework.status as st
 
 from generic.views import BaseView
 
+# http://127.0.0.1:8080/oauth2/authorize/?client_id=Lm07c3cveewrcbcBwt0h4erkifIz1fyT0oMLvcR0&response_type=code
 
 class OAuth2TokenView(BaseView):
     authentication_classes = (OAuth2Authentication,)
