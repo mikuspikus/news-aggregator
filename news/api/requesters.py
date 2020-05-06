@@ -8,13 +8,27 @@ from django.conf import settings
 from redis import StrictRedis
 
 __default_urls = {
+    'exchange-code': 'http://localhost:8080/oauth2/authorize',
+    'authenticate-oauth2': 'http://localhost:8080/v0/oauth2/logged-in',
     'authenticate': 'http://localhost:8080/v0/users/logged-in',
     'login': 'http://localhost:8080/v0/users/login',
     'auth-token': 'http://localhost:8080/v0/tokens',
-    'send-credentials': 'http://localhost:8080/v0/users',
-    'update-credentials': 'http://localhost:8080/v0/users/{uuid}'
 }
 URLS = getattr(settings, 'URLS', __default_urls)
+
+
+def authenticate_oauth2(token: str) -> Tuple[dict, int]:
+    try:
+        response = base.get(
+            url=URLS['authenticate-oauth2'],
+            headers={'Authorization': token}
+        )
+
+    except RequestException as error:
+        return base.process_errr(error)
+
+    return response.json(), response.status_code
+
 
 ID = getattr(settings, 'APPID', 'users')
 SECRET = getattr(settings, 'APPSECRET', 'users-secret')

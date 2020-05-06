@@ -9,7 +9,7 @@ from queueconfig.celeryconfig import Config
 
 from .models import News, User, Vote
 from .serializers import NewsSerializer
-from .authentication import TokenAuthentication
+from .authentication import TokenAuthentication, OAuth2TokenAuthentication
 from .permissions import IsAuthenticatedFor, IsAuthorizedAndNewsOwner
 from .pagination import PageNumberPaginationTotalPages
 
@@ -23,6 +23,7 @@ SCORE_CHANGE = getattr(settings, 'SCORE_CHANGE', 0.2)
 
 
 class BaseNewsView(BaseView):
+    authentication_classes = (TokenAuthentication, OAuth2TokenAuthentication)
     celery = Celery()
     task = 'tasks.stats.news'
 
@@ -39,7 +40,7 @@ class NewsVoteView(BaseNewsView):
     user = User
     vote = Vote
     serializer = NewsSerializer
-    authentication_classes = (TokenAuthentication, )
+    # authentication_classes = (TokenAuthentication, )
     permission_classes = (IsRemoteAuthenticated, )
 
     def get(self, request: Request, pk: UUID, format: str = 'json') -> Response:
@@ -106,7 +107,7 @@ class NewsVoteView(BaseNewsView):
 class SingleNewsView(BaseNewsView):
     model = News
     serializer = NewsSerializer
-    authentication_classes = (TokenAuthentication, )
+    # authentication_classes = (TokenAuthentication, )
     permission_classes = (IsAuthenticatedFor, IsAuthorizedAndNewsOwner)
 
     def get(self, request: Request, pk: UUID, format: str = 'json') -> Response:
@@ -159,7 +160,7 @@ class MultiNewsView(BaseNewsView):
 
     pagination_class = PageNumberPaginationTotalPages()
     permission_classes = (IsAuthenticatedFor,)
-    authentication_classes = (TokenAuthentication,)
+    # authentication_classes = (TokenAuthentication,)
 
     def post(self, request: Request, format: str = 'json') -> Response:
         self.info(request, f'adding object')
