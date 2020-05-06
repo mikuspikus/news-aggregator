@@ -4,7 +4,7 @@ from queueconfig.celeryconfig import Config
 
 from .models import Comment
 from .serializers import CommentSerializer
-from .authentication import TokenAuthentication
+from .authentication import TokenAuthentication, OAuth2TokenAuthentication
 
 from rest_framework.views import APIView, Request, Response
 import rest_framework.status as st
@@ -17,6 +17,7 @@ from generic.views import BaseView
 
 
 class CommentsBaseView(BaseView):
+    authentication_classe = (TokenAuthentication, OAuth2TokenAuthentication)
     celery = Celery()
     task = 'tasks.stats.comment'
 
@@ -31,7 +32,7 @@ class CommentsBaseView(BaseView):
 class CommentView(CommentsBaseView):
     model = Comment
     serializer = CommentSerializer
-    authentication_classes = (TokenAuthentication,)
+    # authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthorizaedAndAuthor, )
 
     def get(self, request: Request, id_: int, format: str = 'json') -> Response:
@@ -76,7 +77,7 @@ class CommentsView(CommentsBaseView):
     serializer = CommentSerializer
 
     permission_classes = [IsRemoteAuthenticated]
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
 
     def post(self, request: Request) -> Response:
         self.info(request, f'adding object')
