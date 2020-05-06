@@ -113,6 +113,10 @@ USE_L10N = True
 
 USE_TZ = True
 
+OAUTH2 = {
+    'CLIENT_ID': os.environ.get('CLIENT_ID', 'Lm07c3cveewrcbcBwt0h4erkifIz1fyT0oMLvcR0'),
+    'CLIENT_SECRET': os.environ.get('CLIENT_SECRET', 'ydV0rD279ZycqihCvXc2dXWvcDXpvjBu6nGB6suZsHwm162UUnwor5wYc541wuzoWel4Kspq0hCjZw5mx3n5zvkw0kP84E08tGRmn5yVMTnXqFPFfJAUtDVNNokTDqiK'),
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
