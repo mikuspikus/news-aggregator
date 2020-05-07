@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import ehandler from '../../utility/errorhandler.js'
 export default {
   name: "LoginForm",
 
@@ -60,8 +61,9 @@ export default {
         .dispatch("login", { user: { username, password }, vue: this })
         .then(() => this.$router.push("/"))
         .catch(error => {
-          this.$bvToast.toast(error.message, {
-            title: "Error",
+          const {msg, code} = ehandler.loginerror(error)
+          this.$bvToast.toast(msg, {
+            title: code ? `Error with code ${code}` : "Error",
             autoHideDelay: 5000,
             toaster: "b-toaster-bottom-center"
           });

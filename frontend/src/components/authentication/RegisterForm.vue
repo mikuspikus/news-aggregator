@@ -1,5 +1,5 @@
 <template>
-  <div id="register-from">
+  <div id="register-form">
     <b-card
       border-variant="dark"
       header="Sign up"
@@ -8,6 +8,10 @@
       header-bg-variant="dark"
       header-class="text-center"
     >
+      <template v-for="(eitems, ename) in errors">
+        <error-card :key="ename" :ename="ename" :eitems="eitems"/>
+      </template>
+
       <b-form @submit="onSubmit" @reset="onReset" v-if="show">
         <b-form-group id="input-group-usernmae" label="Your username:" label-for="input-username">
           <b-form-input
@@ -61,12 +65,17 @@
 </template>
 
 <script>
+import ErrorCard from "../utility/ErrorCard.vue";
+import ehandler from "../../utility/errorhandler.js";
 export default {
   name: "RegisterForm",
+
+  components: { ErrorCard },
 
   data() {
     return {
       show: true,
+      errors: {},
       form: {
         username: "",
         email: "",
@@ -79,14 +88,10 @@ export default {
   methods: {
     onSubmit(event) {
       event.preventDefault();
+      this.errors = {}
 
       if (this.form.pwd !== this.form.pwdconf) {
-        this.$bvToast.toast(`Your passwords do not match`, {
-          title: "Error",
-          autoHideDelay: 5000,
-          toaster: "b-toaster-bottom-center"
-        });
-
+        this.errors = {password: ["Your passwords do not match"]};
         return;
       }
 
@@ -101,11 +106,17 @@ export default {
         })
         .then(() => this.$router.push("/"))
         .catch(error => {
-          this.$bvToast.toast(error.message, {
-            title: "Error",
-            autoHideDelay: 5000,
-            toaster: "b-toaster-bottom-center"
-          });
+          const { data, code } = ehandler.formerror(error);
+
+          if (code) {
+            this.errors = data;
+          } else {
+            this.$bvToast.toast(data, {
+              title: "Register Error",
+              autoHideDelay: 5000,
+              toaster: "b-toaster-bottom-center"
+            });
+          }
         });
     },
 

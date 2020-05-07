@@ -42,12 +42,16 @@
           :name.sync="title"
           :url.sync="url"
           :edit.sync="edit"
+          v-on:refetch-feed="fetchParsedFeed"
         />
       </template>
 
       <template v-else>
         <b-collapse :id="'accordion-' + index" accordion="my-accordion" role="tabpanel">
           <b-card-body>
+            <template v-for="(eitems, ename) in errors">
+              <error-card :key="ename" :ename="ename" :eitems="eitems" />
+            </template>
             <b-link v-for="entry in entries" :key="entry.title" :href="entry.link">
               {{ entry.title }}
               <br />
@@ -61,10 +65,13 @@
 
 <script>
 import FeedEditForm from "../rssfeed/FeedEditForm.vue";
+import ehandler from "../../utility/errorhandler.js";
+import ErrorCard from "../utility/ErrorCard.vue";
+
 export default {
   name: "feed",
 
-  components: { FeedEditForm },
+  components: { FeedEditForm, ErrorCard },
 
   props: {
     id: Number,
@@ -76,6 +83,7 @@ export default {
 
   data() {
     return {
+      errors: {},
       edit: false,
       entries: []
     };
@@ -93,15 +101,22 @@ export default {
 
   methods: {
     fetchParsedFeed() {
+      this.errors = {};
+      this.entries = [];
       this.$http
         .rssparser({ url: `feeds/${this.id}/parse`, method: "GET" })
         .then(response => {
-          console.log(response.data);
           this.entries = response.data.entries;
         })
         .catch(error => {
-          this.$bvToast.toast(error.message, {
-            title: "Feed parsing error",
+          const { data, code } = ehandler.feedparseerror(error);
+
+          this.errors = { "Feed parsing error": [data] };
+
+          this.$bvToast.toast(data, {
+            title: code
+              ? `Feed parsing error with code ${code}`
+              : "Feed parsing error",
             autoHideDelay: 5000,
             toaster: "b-toaster-bottom-center"
           });

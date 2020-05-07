@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import ehandler from '../../utility/errorhandler.js'
+import ehandler from "../../utility/errorhandler.js";
 export default {
   name: "feed-form",
 
@@ -63,20 +63,20 @@ export default {
 
   methods: {
     patch(feed) {
-      this.$http.rssparser({
-        url: `feeds/${this.id}`,
-        data: feed,
-        method: "PATCH"
-      })
+      this.$http
+        .rssparser({
+          url: `feeds/${this.id}`,
+          data: feed,
+          method: "PATCH"
+        })
         .then(response => {
           this.$emit("update:name", response.data.name);
           this.$emit("update:url", response.data.url);
           this.$emit("update:edit", false);
+          this.$emit("refetch-feed");
         })
         .catch(error => {
-          ehandler.error(
-            this, error, "Feed editing error", "Feed not found"
-          );
+          ehandler.error(this, error, "Feed editing error", "Feed not found");
           // if (error.response) {
           //   switch (error.response.status) {
           //     case 401:
