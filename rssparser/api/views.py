@@ -39,30 +39,37 @@ class FeedParseView(FeedBaseView):
         parsed_feed = fp.parse(feed.url)
 
         user = request.auth.get('uuid') if request.auth else None
+        self.send_task('GET', user, output = {'status': parsed_feed.status})
 
-        self.send_task('GET', user, parsed_feed)
+        status = parsed_feed.get('status')
+        if status == 200:
+            return Response(data=parsed_feed, status=status)
 
-        return Response(data=parsed_feed, status=st.HTTP_200_OK)
+        msg = parsed_feed.bozo_exception.getMessage()
+        self.exception(request, f"failed to parse feed with error : {msg}")
+
+        return Response(data = {'error': msg}, status = status)
 
 
-class FeedsParseView(FeedBaseView):
-    model = Feed
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthorizedAndFeedsOwner,)
 
-    def get_objects(self, request: Request, user: UUID) -> Feed:
-        return self.model.objects.filter(user=user)
+# class FeedsParseView(FeedBaseView):
+#     model = Feed
+#     authentication_classes = (TokenAuthentication,)
+#     permission_classes = (IsAuthorizedAndFeedsOwner,)
 
-    def get(self, request: Request, user: UUID, format: str = 'json') -> Response:
-        self.info(request, f"requested for user ({user}) feeds")
+#     def get_objects(self, request: Request, user: UUID) -> Feed:
+#         return self.model.objects.filter(user=user)
 
-        feeds = self.get_objects(request, user)
-        parsed_feeds = [fp.parse(feed.url) for feed in feeds]
-        user = request.auth.get('uuid') if request.auth else None
-        self.send_task(action='GET', user=user, output={
-                       'length': len(parsed_feeds)})
+#     def get(self, request: Request, user: UUID, format: str = 'json') -> Response:
+#         self.info(request, f"requested for user ({user}) feeds")
 
-        return Response(data=parsed_feeds, status=st.HTTP_200_OK)
+#         feeds = self.get_objects(request, user)
+#         parsed_feeds = [fp.parse(feed.url) for feed in feeds]
+#         user = request.auth.get('uuid') if request.auth else None
+#         self.send_task(action='GET', user=user, output={
+#                        'length': len(parsed_feeds)})
+
+#         return Response(data=parsed_feeds, status=st.HTTP_200_OK)
 
 
 class FeedView(FeedBaseView):
@@ -71,7 +78,7 @@ class FeedView(FeedBaseView):
     authentication_classes = (TokenAuthentication, )
     permission_classes = (IsAuthenticatedFor, IsAuthorizedAndFeedOwner)
 
-    def get(self, request: Request, pk: UUID, format: str = 'json') -> Response:
+    def get(self, request: Request, pk: int, format: str = 'json') -> Response:
         self.info(request, f'asked for object with pk : {pk}')
 
         obj = self.get_object(request, pk)
@@ -81,12 +88,12 @@ class FeedView(FeedBaseView):
 
         return Response(data=serializer_.data, status=st.HTTP_200_OK)
 
-    def patch(self, request: Request, pk: UUID, format: str = 'json') -> Response:
+    def patch(self, request: Request, pk: int, format: str = 'json') -> Response:
         self.info(request, f'asked to modify object with id : {pk}')
 
         obj = self.get_object(request, pk)
-        old_objserializer = self.serializer(instance=obj)
-        serializer_ = self.serializer(instance=obj, data=request.data)
+        old_objserializer = self.serializer(instance=obj, partial=True)
+        serializer_ = self.serializer(instance=obj, data=request.data, partial=True)
         user = request.auth.get('uuid') if request.auth else None
 
         if serializer_.is_valid():
@@ -104,7 +111,7 @@ class FeedView(FeedBaseView):
                        input=old_objserializer.data, output=serializer_.errors)
         return Response(data=serializer_.errors, status=st.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request: Request, pk: UUID, format: str = 'json') -> Response:
+    def delete(self, request: Request, pk: int, format: str = 'json') -> Response:
         self.info(request, f'asked to delete object with id : {pk}')
 
         obj = self.get_object(request, pk)
