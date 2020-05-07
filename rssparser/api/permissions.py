@@ -8,7 +8,7 @@ class IsAuthenticatedFor(IsAuthenticatedForMethods):
 class IsAuthorizedAndFeedOwner(IsAuthorizedAndOwner):
 
     def is_owner(self, feed: Feed, request: Request) -> bool:
-        return feed.user == request.auth.get('uuid')
+        return str(feed.user) == request.auth.get('uuid')
 
 
 class IsAuthorizedAndFeedsOwner(IsAuthorizedAndOwner):
@@ -16,4 +16,4 @@ class IsAuthorizedAndFeedsOwner(IsAuthorizedAndOwner):
 
     def is_owner(self, feeds, request: Request) -> bool:
         if not feeds.count(): return True
-        return feeds[0].user == request.auth.get('uuid')
+        return str(feeds[0].user) == request.auth.get('uuid')
