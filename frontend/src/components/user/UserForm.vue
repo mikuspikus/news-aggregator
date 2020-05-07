@@ -56,7 +56,7 @@
             ></b-form-input>
           </b-form-group>
 
-          <b-button class="mr-1" type="submit" variant="outline-dark">Sign up</b-button>
+          <b-button class="mr-1" type="submit" variant="outline-dark">Change</b-button>
           <b-button class="ml-1" type="reset" variant="dark">Reset</b-button>
         </template>
       </b-form>
