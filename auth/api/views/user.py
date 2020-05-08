@@ -53,6 +53,7 @@ class AuthTokenView(BaseView):
 class UserView(BaseView):
     model = AuthUser
     authentication_classes = (UserTokenAuthentication,)
+    permission_classes = (IsAuthenticated, )
     serializer = UserSerializer
 
     def patch(self, request: Request, uuid: str, format: str = "json") -> Response:
@@ -77,6 +78,7 @@ class UserView(BaseView):
 
 class UserLoginView(BaseView):
     authentication_classes = (UserCredentialsAuthentication,)
+    permission_classes = (IsAuthenticated, )
     token_model = UserAuthToken
 
     def post(self, request: Request, format: str = "json") -> Response:
