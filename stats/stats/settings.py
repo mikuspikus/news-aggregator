@@ -41,6 +41,10 @@ INSTALLED_APPS = [
     'api'
 ]
 
+REST_FRAMEWORK = {
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json'
+}
+
 # authentication backend for admin panel
 AUTHENTICATION_BACKENDS = [
    'api.backends.RemoteAuthBackend',

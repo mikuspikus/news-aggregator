@@ -173,7 +173,7 @@ class MultiNewsView(BaseNewsView):
             self.send_task(action='POST', user=request.auth.get(
                 'uuid'), output=serializer_.data)
 
-            return Response(data=serializer_.data, status=st.HTTP_202_ACCEPTED)
+            return Response(data=serializer_.data, status=st.HTTP_201_CREATED)
 
         self.exception(
             request, f'not valid data for serializer : {serializer_.errors}')

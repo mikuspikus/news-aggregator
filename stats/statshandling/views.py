@@ -19,7 +19,7 @@ class BaseStatView(BaseView):
         serializer = self.serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(data = serializer.data, status=st.HTTP_202_ACCEPTED)
+            return Response(data = serializer.data, status=st.HTTP_201_CREATED)
 
         self.exception(request, f'not valid data for serializer : {serializer.errors}')
         return Response(data=serializer.errors, status=st.HTTP_400_BAD_REQUEST)

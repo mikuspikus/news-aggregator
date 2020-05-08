@@ -4,11 +4,11 @@ from .views import UsersStatView, CommentsStatsView, RSSParserStatsView, NewsSta
 
 urlpatterns = [
     path(UsersStatView.service, UsersStatView.as_view(),
-         name=UsersStatView.service),
+         name='stats-users'),
     path(CommentsStatsView.service, CommentsStatsView.as_view(),
-         name=CommentsStatsView.service),
+         name='stats-comments'),
     path(RSSParserStatsView.service, RSSParserStatsView.as_view(),
-         name=RSSParserStatsView.service),
+         name='stats-rss-parser'),
     path(NewsStatsView.service, NewsStatsView.as_view(),
-         name=NewsStatsView.service),
+         name='stats-news'),
 ]

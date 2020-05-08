@@ -56,7 +56,7 @@ class UserView(UserBaseView):
 
             self.send_task(action = 'PATCH', user = request.auth.get('uuid'), input = old_objserializer.data, output = serializer_.data)
 
-            return Response(data=serializer_.data, status=st.HTTP_202_ACCEPTED)
+            return Response(data=serializer_.data, status=st.HTTP_201_CREATED)
 
         self.exception(
             request, f'not valid data for serializer : {serializer_.errors}')

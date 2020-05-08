@@ -139,7 +139,7 @@ class FeedsView(FeedBaseView):
 
             self.send_task(action='POST', user=user, output=serializer_.data)
 
-            return Response(data=serializer_.data, status=st.HTTP_202_ACCEPTED)
+            return Response(data=serializer_.data, status=st.HTTP_201_CREATED)
 
         self.exception(
             request, f'not valid data for serializer : {serializer_.errors}')
