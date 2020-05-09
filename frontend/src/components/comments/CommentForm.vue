@@ -43,7 +43,7 @@ export default {
 
   methods: {
     post(comment) {
-      this.$httpcomment({
+      this.$http.comment({
         url: "comments",
         data: comment,
         method: "POST"

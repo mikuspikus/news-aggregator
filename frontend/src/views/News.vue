@@ -107,11 +107,12 @@ export default {
     },
 
     fetchComments() {
-      this.$http.comment({
-        url: "comments",
-        method: "GET",
-        params: { news: this.uuid }
-      })
+      this.$http
+        .comment({
+          url: "comments",
+          method: "GET",
+          params: { news: this.news_uuid }
+        })
         .then(response => {
           this.comments_status.loading = false;
           this.comments = response.data;
