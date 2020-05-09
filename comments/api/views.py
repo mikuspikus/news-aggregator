@@ -91,7 +91,7 @@ class CommentsView(CommentsBaseView):
         serializer_ = self.serializer(data=data)
 
         if serializer_.is_valid():
-            _, code = get_news(newsuuid=data.get('news'))
+            response, code = get_news(newsuuid=data.get('news'))
 
             if code == 200:
                 serializer_.save()
@@ -101,7 +101,7 @@ class CommentsView(CommentsBaseView):
 
                 return Response(data=serializer_.data, status=st.HTTP_201_CREATED)
 
-            return Response(data)
+            return Response(data={'error': f"[news] service returned code : {code}"}, status=code)
 
         self.exception(
             request, f'not valid data for serializer : {serializer_.errors}')
