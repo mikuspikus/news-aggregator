@@ -22,6 +22,7 @@
                 variant="dark"
                 border-variant="dark"
                 v-b-tooltip.hover.right="'Delete comment'"
+                @click="deleteComment"
               >
                 <b-icon icon="x-square-fill" aria-hidden="true"></b-icon>
               </b-button>
@@ -97,7 +98,7 @@ export default {
         url: `comments/${this.id}`,
         method: "DELETE"
       })
-        .then(this.$emit("delete-comment-by-index", this.index))
+        .then(() => {this.$emit("delete-comment-by-index", this.index)})
         .catch(error => {
           this.$bvToast.toast(error.message, {
             title: "Comment delete error",
