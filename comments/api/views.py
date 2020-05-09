@@ -5,6 +5,8 @@ from queueconfig.celeryconfig import Config
 from .models import Comment
 from .serializers import CommentSerializer
 from .authentication import TokenAuthentication, OAuth2TokenAuthentication
+from .permissions import IsAuthorizaedAndAuthor
+from .requesters import get_news
 
 from rest_framework.views import APIView, Request, Response
 import rest_framework.status as st
@@ -12,12 +14,10 @@ import rest_framework.status as st
 from uuid import UUID
 
 from remoteauth.permissions import IsRemoteAuthenticated
-from .permissions import IsAuthorizaedAndAuthor
 from generic.views import BaseView
 
 
 class CommentsBaseView(BaseView):
-    authentication_classe = (TokenAuthentication, OAuth2TokenAuthentication)
     celery = Celery()
     task = 'tasks.stats.comment'
 
@@ -32,7 +32,7 @@ class CommentsBaseView(BaseView):
 class CommentView(CommentsBaseView):
     model = Comment
     serializer = CommentSerializer
-    # authentication_classes = (TokenAuthentication,)
+    authentication_classes = (TokenAuthentication, OAuth2TokenAuthentication)
     permission_classes = (IsAuthorizaedAndAuthor, )
 
     def get(self, request: Request, id_: int, format: str = 'json') -> Response:
@@ -40,7 +40,8 @@ class CommentView(CommentsBaseView):
 
         obj = self.get_object(request, id_)
         serializer_ = self.serializer(instance=obj)
-        self.send_task(action = 'GET', user = request.auth.get('uuid'), output = serializer_.data)
+        self.send_task(action='GET', user=request.auth.get(
+            'uuid'), output=serializer_.data)
 
         return Response(data=serializer_.data, status=st.HTTP_200_OK)
 
@@ -53,13 +54,15 @@ class CommentView(CommentsBaseView):
 
         if serializer_.is_valid():
             serializer_.save()
-            self.send_task(action = 'PATCH', user = request.auth.get('uuid'), input = old_objserializer.data, output = serializer_.data)
+            self.send_task(action='PATCH', user=request.auth.get(
+                'uuid'), input=old_objserializer.data, output=serializer_.data)
 
             return Response(data=serializer_.data, status=st.HTTP_202_ACCEPTED)
 
         self.exception(
             request, f'not valid data for serializer : {serializer_.errors}')
-        self.send_task(action = 'PATCH', user = request.auth.get('uuid'), input = old_objserializer.data, output = serializer_.errors)
+        self.send_task(action='PATCH', user=request.auth.get(
+            'uuid'), input=old_objserializer.data, output=serializer_.errors)
         return Response(data=serializer_.errors, status=st.HTTP_400_BAD_REQUEST)
 
     def delete(self, request: Request, id_: int, format: str = 'json') -> Response:
@@ -67,7 +70,7 @@ class CommentView(CommentsBaseView):
 
         obj = self.get_object(request, id_)
         obj.delete()
-        self.send_task(name = 'DELETE', user = request.auth.get('uuid'), output = serializer.data)
+        self.send_task(action='DELETE', user=request.auth.get('uuid'))
 
         return Response(status=st.HTTP_204_NO_CONTENT)
 
@@ -77,20 +80,28 @@ class CommentsView(CommentsBaseView):
     serializer = CommentSerializer
 
     permission_classes = [IsRemoteAuthenticated]
-    # authentication_classes = [TokenAuthentication]
+    authentication_classes = (TokenAuthentication, OAuth2TokenAuthentication)
 
     def post(self, request: Request) -> Response:
         self.info(request, f'adding object')
 
-        serializer_ = self.serializer(data=request.data)
+        data = request.data
+        data['author'] = request.auth.get('uuid')
+
+        serializer_ = self.serializer(data=data)
 
         if serializer_.is_valid():
-            serializer_.save()
-            user = request.auth.get('uuid') if request.auth else None
-            self.send_task(action = 'POST', user = user, output = serializer_.data)
+            _, code = get_news(newsuuid=data.get('news'))
 
+            if code == 200:
+                serializer_.save()
+                user = request.auth.get('uuid') if request.auth else None
+                self.send_task(action='POST', user=user,
+                               output=serializer_.data)
 
-            return Response(data=serializer_.data, status=st.HTTP_201_CREATED)
+                return Response(data=serializer_.data, status=st.HTTP_201_CREATED)
+
+            return Response(data)
 
         self.exception(
             request, f'not valid data for serializer : {serializer_.errors}')
@@ -103,10 +114,11 @@ class CommentsView(CommentsBaseView):
 
         news = request.query_params.get('news')
         if news:
-            row_s_ = row_s_.filter(news = news)
+            row_s_ = row_s_.filter(news=news)
 
         serializer_ = self.serializer(row_s_, many=True)
         user = request.auth.get('uuid') if request.auth else None
-        self.send_task(action = 'GET', user = user, output = {'length' : len(serializer_.data)})
+        self.send_task(action='GET', user=user, output={
+                       'length': len(serializer_.data)})
 
         return Response(data=serializer_.data, status=st.HTTP_200_OK)

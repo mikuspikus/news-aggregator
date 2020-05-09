@@ -8,6 +8,7 @@ from django.conf import settings
 from redis import StrictRedis
 
 __default_urls = {
+    'single-news': 'http://localhost:8082/v0/news/{newsuuid}',
     'exchange-code': 'http://localhost:8080/oauth2/authorize',
     'authenticate-oauth2': 'http://localhost:8080/v0/oauth2/logged-in',
     'authenticate': 'http://localhost:8080/v0/users/logged-in',
@@ -66,6 +67,19 @@ def token(id: str, secret: str) -> Tuple[dict, int]:
         return base.process_error(error)
 
     return response.json(), response.status_code
+
+
+def get_news(newsuuid: str) -> Tuple[dict, int]:
+    try:
+        response = base.get(
+            url = URLS['single-news'].format(newsuuid = newsuuid)
+        )
+
+    except RequestException as error:
+        return base.process_error(error)
+
+    return response, response.status_code
+
 
 
 @TokenAuthorization(storage=STORAGE, new=token, id=ID, secret=SECRET, t_label=TOKEN_LABEL)
