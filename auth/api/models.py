@@ -6,7 +6,7 @@ from uuid import uuid4
 from tokenauthentication.models import Token
 
 class AuthUser(AbstractUser):
-    uuid = models.UUIDField(unique = True)
+    uuid = models.UUIDField(unique = True, default=uuid4)
 
     def __str__(self) -> str:
         return f'{self.username} [{self.uuid}]'
