@@ -148,7 +148,7 @@ class SingleNewsView(BaseNewsView):
         obj = self.get_object(request, pk)
         serializer = self.serializer(instance=obj)
         obj.delete()
-        self.send_task(name='DELETE', user=request.auth.get(
+        self.send_task(action='DELETE', user=request.auth.get(
             'uuid'), output=serializer.data)
 
         return Response(status=st.HTTP_204_NO_CONTENT)
