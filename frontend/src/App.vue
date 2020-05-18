@@ -1,25 +1,25 @@
 <template>
   <div id="app">
-    <navbar :islogged="isLoggedIn"/>
-    <feeds v-if="isLoggedIn"/>
+    <navbar :islogged="isLoggedIn" />
+    <feeds v-if="isLoggedIn" />
 
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
 <script>
-import Navbar from '../src/components/utility/Navbar.vue'
-import Feeds from '../src/components/rssfeed/Feeds.vue'
+import Navbar from "../src/components/utility/Navbar.vue";
+import Feeds from "../src/components/rssfeed/Feeds.vue";
 
 export default {
-  components: {Navbar, Feeds},
+  components: { Navbar, Feeds },
 
   computed: {
-    isLoggedIn () {
+    isLoggedIn() {
       return this.$store.getters.isLoggedIn;
     }
   }
-}
+};
 </script>
 
 <style>
