@@ -13,7 +13,7 @@ class BaseView(APIView):
             obj = self.model.objects.get(pk=pk)
 
         except self.model.DoesNotExist as error:
-            self.exception(f'object with id : {pk} not found')
+            self.exception(request, f'object with id : {pk} not found')
             raise Http404
 
         self.check_object_permissions(request, obj)
