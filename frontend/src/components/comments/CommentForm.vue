@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import ehandler from '../../utility/errorhandler';
 export default {
   name: "comment-form",
 
@@ -51,7 +52,19 @@ export default {
         .then(() => {
           this.$emit("reload-comments");
         })
-        .catch();
+        .catch(error => {
+          const { data, code } = ehandler.formerror(error);
+
+          if (code) {
+            this.errors = data;
+          } else {
+            this.$bvToast.toast(data, {
+              title: "Comment Edit Error",
+              autoHideDelay: 5000,
+              toaster: "b-toaster-bottom-center"
+            });
+          }
+        });
     },
 
     onSubmit(event) {

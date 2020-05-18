@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import ehandler from "../../utility/errorhandler.js";
 export default {
   name: "news-form",
 
@@ -46,11 +47,12 @@ export default {
 
   methods: {
     patch(data) {
-      this.$http.news({
-        url: `news/${this.news_uuid}`,
-        data: data,
-        method: "PATCH"
-      })
+      this.$http
+        .news({
+          url: `news/${this.news_uuid}`,
+          data: data,
+          method: "PATCH"
+        })
         .then(response => {
           console.log(response);
           this.$emit("update:title", response.data.title);
@@ -59,11 +61,17 @@ export default {
           this.$emit("update:edit", false);
         })
         .catch(error => {
-          this.$bvToast.toast(error.message, {
-            title: "News editing",
-            autoHideDelay: 5000,
-            toaster: "b-toaster-bottom-center"
-          });
+          const { data, code } = ehandler.formerror(error);
+
+          if (code) {
+            this.errors = data;
+          } else {
+            this.$bvToast.toast(data, {
+              title: "News Edit Error",
+              autoHideDelay: 5000,
+              toaster: "b-toaster-bottom-center"
+            });
+          }
         });
     },
 

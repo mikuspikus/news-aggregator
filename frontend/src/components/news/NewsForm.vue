@@ -22,97 +22,66 @@
 </template>
 
 <script>
+import ehandler from "../../utility/errorhandler.js";
 export default {
   name: "news-form",
-
-  props: {
-    title: { type: String, default: null },
-    url: { type: String, default: null },
-    edit: { typr: Boolean },
-    uuid: { type: String, default: null }
-  },
 
   data() {
     return {
       show: true,
       form: {
-        title: this.title !== null ? this.title : "",
-        url: this.url !== null ? this.url : ""
+        title: "",
+        url: ""
       }
     };
   },
 
-  computed: {
-    isNew() {
-      return !(this.title || this.url || this.uuid);
-    }
-  },
-
   methods: {
     post(data) {
-      this.$http.news({
-        url: "news",
-        data: data,
-        method: "POST"
-      })
+      this.$http
+        .news({
+          url: "news",
+          data: data,
+          method: "POST"
+        })
         .then(response => {
           this.$router.push({
             name: "NewsSingle",
-            params: { uuid: response.data.uuid }
+            params: { uuid: response.data.id }
           });
         })
         .catch(error => {
-          this.$bvToast.toast(error.message, {
-            title: "Error",
-            autoHideDelay: 5000,
-            toaster: "b-toaster-bottom-center"
-          });
-        });
-    },
+          const { data, code } = ehandler.formerror(error);
 
-    patch(data) {
-      this.$http.news({
-        url: `news/${this.uuid}`,
-        data: data,
-        method: "PATCH"
-      })
-        .then(() => {
-          this.$emit('reload')
-        })
-        .catch(error => {
-          this.$bvToast.toast(error.message, {
-            title: "Error",
-            autoHideDelay: 5000,
-            toaster: "b-toaster-bottom-center"
-          });
+          if (code) {
+            this.errors = data;
+          } else {
+            this.$bvToast.toast(data, {
+              title: "News Form Error",
+              autoHideDelay: 5000,
+              toaster: "b-toaster-bottom-center"
+            });
+          }
         });
     },
 
     onSubmit(event) {
       event.preventDefault();
-
-      this.$emit("update:title", this.form.title);
-      this.$emit("update:url", this.form.url);
-      this.$emit("update:edit", false);
+      this.$emit("refetch-news");
 
       let news_data = {
         title: this.form.title,
         url: this.form.url,
         author: this.$store.getters.uuid
       };
-
-      if (this.isNew) {
-        this.post(news_data);
-      } else {
-        this.patch(news_data);
-      }
+      this.post(news_data);
     },
 
     onReset(event) {
       event.preventDefault();
 
-      this.form.title = this.title;
-      this.form.url = this.url;
+      this.form.title = "";
+      this.form.url = "";
 
       this.show = false;
       // magic trick to reset/clear native browser form validation state
