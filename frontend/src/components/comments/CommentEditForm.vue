@@ -1,5 +1,8 @@
 <template>
   <div id="comment">
+    <template v-for="(eitems, ename) in errors">
+      <error-card :key="ename" :ename="ename" :eitems="eitems" />
+    </template>
     <b-form @submit="onSubmit" @reset="onReset" v-if="show">
       <b-form-group
         id="input-group-comment"
@@ -24,9 +27,12 @@
 </template>
 
 <script>
-import ehandler from '../../utility/errorhandler.js'
+import ehandler from "../../utility/errorhandler.js";
+import ErrorCard from "../utility/ErrorCard.vue";
 export default {
   name: "comment-edit-form",
+
+  components: {ErrorCard},
 
   props: {
     id: Number,
@@ -39,6 +45,7 @@ export default {
 
   data() {
     return {
+      errors: {},
       show: true,
       form: {
         body: this.body
@@ -75,6 +82,7 @@ export default {
 
     onSubmit(event) {
       event.preventDefault();
+      this.errors = {}
 
       const comment = {
         id: this.id,

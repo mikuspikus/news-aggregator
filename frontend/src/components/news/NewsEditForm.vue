@@ -1,5 +1,8 @@
 <template>
-  <div id="news">
+  <div id="news-edit">
+    <template v-for="(eitems, ename) in errors">
+      <error-card :key="ename" :ename="ename" :eitems="eitems" />
+    </template>
     <b-form @submit="onSubmit" @reset="onReset" v-if="show">
       <b-form-group id="input-group-title" label="Title:" label-for="input-title">
         <b-form-input
@@ -23,8 +26,11 @@
 
 <script>
 import ehandler from "../../utility/errorhandler.js";
+import ErrorCard from "../utility/ErrorCard.vue";
 export default {
   name: "news-form",
+
+  components: {ErrorCard},
 
   props: {
     news_uuid: String,
@@ -37,6 +43,7 @@ export default {
 
   data() {
     return {
+      errors: {},
       show: true,
       form: {
         title: this.title,
@@ -77,6 +84,7 @@ export default {
 
     onSubmit(event) {
       event.preventDefault();
+      this.errors = {}
       const news = {
         id: this.news_uuid,
         author: this.user_uuid,

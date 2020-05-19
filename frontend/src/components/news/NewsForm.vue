@@ -1,5 +1,8 @@
 <template>
   <div id="news">
+    <template v-for="(eitems, ename) in errors">
+      <error-card :key="ename" :ename="ename" :eitems="eitems" />
+    </template>
     <b-form @submit="onSubmit" @reset="onReset" v-if="show">
       <b-form-group id="input-group-title" label="Title:" label-for="input-title">
         <b-form-input
@@ -23,11 +26,15 @@
 
 <script>
 import ehandler from "../../utility/errorhandler.js";
+import ErrorCard from "../utility/ErrorCard.vue";
 export default {
   name: "news-form",
 
+  components: { ErrorCard },
+
   data() {
     return {
+      errors: {},
       show: true,
       form: {
         title: "",
@@ -67,6 +74,7 @@ export default {
 
     onSubmit(event) {
       event.preventDefault();
+      this.errors = {}
       this.$emit("refetch-news");
 
       let news_data = {
