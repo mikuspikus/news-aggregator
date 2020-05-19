@@ -12,6 +12,8 @@ __default_urls = {
     'authenticate': 'http://localhost:8080/v0/users/logged-in',
     'login': 'http://localhost:8080/v0/users/login',
     'auth-token': 'http://localhost:8080/v0/tokens',
+    'update-credentials': 'http://localhost:8080/v0/users/{uuid}',
+    'send-credentials': 'http://localhost:8080/v0/users',
 }
 URLS = getattr(settings, 'URLS', __default_urls)
 
@@ -58,7 +60,7 @@ def authenticate(token: str) -> Tuple[dict, int]:
     try:
         response = base.get(
             url=URLS['authenticate'],
-            headers={'Authentication': token}
+            headers={'Authorization': token}
         )
 
     except RequestException as error:

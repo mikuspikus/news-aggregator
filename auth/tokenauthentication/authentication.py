@@ -40,8 +40,7 @@ class GenericExpiringTokenAuthentication(TokenAuthentication):
             token = model.objects.get(pk = key)
 
         except model.DoesNotExist:
-            msg = 'Invalid token'
-            raise AuthenticationFailed(msg, code = 'authentication')
+            return None
 
         is_expired = token_handler(token)
 

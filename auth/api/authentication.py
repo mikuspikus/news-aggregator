@@ -18,9 +18,13 @@ class UserTokenAuthentication(GenericExpiringTokenAuthentication):
     model = UserAuthToken
 
     def authenticate_credentials(self, key: str):
-        _, token = super().authenticate_credentials(key)
+        payload = super().authenticate_credentials(key)
 
-        return (token.user, token)
+        if (payload):
+            _, token = payload
+            return (token.user, token)
+
+        return None
 
 
 class UserCredentialsAuthentication(BasicAuthentication):

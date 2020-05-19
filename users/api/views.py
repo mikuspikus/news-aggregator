@@ -49,7 +49,7 @@ class UserView(UserBaseView):
 
         obj = self.get_object(request, pk)
         old_objserializer = self.serializer(instance=obj)
-        serializer_ = self.serializer(instance=obj, data=request.data)
+        serializer_ = self.serializer(instance=obj, data=request.data, partial=True)
 
         if serializer_.is_valid():
             serializer_.save()
