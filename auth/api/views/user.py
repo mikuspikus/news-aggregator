@@ -22,7 +22,7 @@ from rest_framework.permissions import IsAuthenticated
 class UsersView(BaseView):
     model = AuthUser
     serializer = UserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = []
     authentication_classes = (ServicesAuthentication,)
 
     def post(self, request: Request) -> Response:
