@@ -13,7 +13,7 @@
         <b-textarea
           id="comment-textarea"
           v-model="form.body"
-          :state="form.body.length >= 8"
+          :state="form.body.length >= 10"
           placeholder="Write here..."
           rows="3"
           max-rows="6"
@@ -32,7 +32,7 @@ import ErrorCard from "../utility/ErrorCard.vue";
 export default {
   name: "comment-edit-form",
 
-  components: {ErrorCard},
+  components: { ErrorCard },
 
   props: {
     id: Number,
@@ -55,11 +55,12 @@ export default {
 
   methods: {
     patch(comment) {
-      this.$httpcomment({
-        url: `comments/${this.id}`,
-        data: comment,
-        method: "PATCH"
-      })
+      this.$http
+        .comment({
+          url: `comments/${this.id}`,
+          data: comment,
+          method: "PATCH"
+        })
         .then(response => {
           this.$emit("update:body", response.data.body);
           this.$emit("update:edited", response.data.edited);
@@ -82,7 +83,7 @@ export default {
 
     onSubmit(event) {
       event.preventDefault();
-      this.errors = {}
+      this.errors = {};
 
       const comment = {
         id: this.id,

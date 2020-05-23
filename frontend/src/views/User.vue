@@ -72,8 +72,8 @@ export default {
           ehandler.error(
             this,
             error,
-            "User tetching Error",
-            `user (UUID: ${this.uuid} not found`
+            "User fetching Error",
+            `user (UUID: ${this.uuid}) not found`
           );
           // this.$bvToast.toast(error.message, {
           //   title: "Error",

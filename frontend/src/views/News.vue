@@ -19,7 +19,7 @@
             <comment-form
               :news_uuid="news_uuid"
               :user_uuid="userUUID"
-              v-on:reload-comments="fetchComments()"
+              v-on:reload-comments="fetchComments"
             />
           </b-card>
         </b-col>

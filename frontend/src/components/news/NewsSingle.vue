@@ -160,7 +160,7 @@ export default {
           method: "POST"
         })
         .then(response => {
-          this.news = response.data;
+          this.news.score = response.data.score;
         })
         .catch(error => {
           console.log(error);
