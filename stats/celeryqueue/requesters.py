@@ -9,7 +9,7 @@ from django.conf import settings
 from redis import StrictRedis
 
 URLS = {
-    'auth-token': os.environ.get('auth-token', 'http://localhost:8083/v0/auth'),
+    'services-token': os.environ.get('services-token', 'http://localhost:8080/v0/tokens'),
     'user-stats': os.environ.get('user-stats', 'http://localhost:8083/v0/users'),
     'news-stats': os.environ.get('news-stats', 'http://localhost:8083/v0/news'),
     'comments-stats': os.environ.get('comments-stats', 'http://localhost:8083/v0/comments'),
@@ -31,12 +31,14 @@ STORAGE = StrictRedis(**REDIS_CONF)
 def token(id: str, secret: str) -> Tuple[dict, int]:
     try:
         response = base.post(
-            url=URLS['auth-token'],
+            url=URLS['services-token'],
             data={'id': id, 'secret': secret}
         )
 
     except RequestException as error:
         return base.process_error(error)
+
+    print(response)
 
     return response.json(), response.status_code
 
@@ -70,7 +72,7 @@ def news_stats(data: dict, headers: dict) -> Tuple[dict, int]:
 
     return response.json(), response.status_code
 
-
+@TokenAuthorization(storage=STORAGE, new=token, id=ID, secret=SECRET, t_label=TOKEN_LABEL)
 def comments_stats(data: dict, headers: dict) -> Tuple[dict, int]:
     try:
         response = base.post(
@@ -84,7 +86,7 @@ def comments_stats(data: dict, headers: dict) -> Tuple[dict, int]:
 
     return response.json(), response.status_code
 
-
+@TokenAuthorization(storage=STORAGE, new=token, id=ID, secret=SECRET, t_label=TOKEN_LABEL)
 def rssparser_stats(data: dict, headers: dict) -> Tuple[dict, int]:
     try:
         response = base.post(
