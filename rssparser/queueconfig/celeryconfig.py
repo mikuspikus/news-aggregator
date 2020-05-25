@@ -10,3 +10,9 @@ DB = os.environ.get('R_DB', '0')
 class Config:
     accept_content = {'json'}
     broker_url = f"redis://{PASSWORD}{HOST}:{PORT}/{DB}"
+    broker_transport_options = {
+        'max_retries': 4,
+        'interval_start': 0,
+        'interval_step': 0.5,
+        'interval_max': 3,
+    }

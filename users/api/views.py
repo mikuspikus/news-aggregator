@@ -25,8 +25,16 @@ class UserBaseView(BaseView):
         self.celery.config_from_object(Config)
         super().__init__(**kwargs)
 
-    def send_task(self, action: str, user: str = None, input: dict = None, output: dict = None):
-        self.celery.send_task(self.task, [user, action, input, output])
+    def exception_msg(self, message: str) -> None:
+        self.logger.exception(message)
+
+    def send_task(self, action: str, user: UUID = None, input: dict = None, output: dict = None):
+        from kombu.exceptions import OperationalError
+        try:
+            self.celery.send_task(self.task, [user, action, input, output])
+
+        except OperationalError as error:
+            self.exception_msg(str(error))
 
 
 class UserView(UserBaseView):
