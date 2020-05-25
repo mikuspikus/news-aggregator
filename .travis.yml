@@ -17,7 +17,7 @@ script:
   #- coverage report -m
 
   - cd ../comments
-  - coverage run manage.py test
+  - python manage.py test
   #- coverage report -m
 
   - cd ../news
@@ -26,6 +26,7 @@ script:
 
   - cd ../rssparser
   - coverage run manage.py test
+  #- coverage report -m
 
   - cd ../stats
   - coverage run manage.py test
