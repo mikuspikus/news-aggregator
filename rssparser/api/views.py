@@ -118,7 +118,7 @@ class FeedView(FeedBaseView):
         serializer = self.serializer(instance=obj)
         obj.delete()
         user = request.auth.get('uuid') if request.auth else None
-        self.send_task(name='DELETE', user=user, output=serializer.data)
+        self.send_task(action='DELETE', user=user, output=serializer.data)
 
         return Response(status=st.HTTP_204_NO_CONTENT)
 
