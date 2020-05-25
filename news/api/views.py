@@ -165,7 +165,7 @@ class MultiNewsView(BaseNewsView):
     def post(self, request: Request, format: str = 'json') -> Response:
         self.info(request, f'adding object')
 
-        data = request.data
+        data = request.data.copy()
         data['uuid'] = request.auth.get('uuid')
 
         serializer_ = self.serializer(data=data)

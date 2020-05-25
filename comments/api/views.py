@@ -85,7 +85,7 @@ class CommentsView(CommentsBaseView):
     def post(self, request: Request) -> Response:
         self.info(request, f'adding object')
 
-        data = request.data
+        data = request.data.copy()
         data['author'] = request.auth.get('uuid')
 
         serializer_ = self.serializer(data=data)
