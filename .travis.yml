@@ -1,0 +1,32 @@
+language:
+  python
+
+python:
+  - '3.6.1'
+
+install:
+  - pip install -r requirements.txt
+
+script:
+  - cd users
+  - coverage run manage.py test
+  #- coverage report -m
+
+  - cd ../auth
+  - coverage run manage.py test
+  #- coverage report -m
+
+  - cd ../comments
+  - coverage run manage.py test
+  #- coverage report -m
+
+  - cd ../news
+  - coverage run manage.py test
+  #- coverage report -m
+
+  - cd ../rssparser
+  - coverage run manage.py test
+
+  - cd ../stats
+  - coverage run manage.py test
+  #- coverage report -m
