@@ -16,6 +16,10 @@ script:
   - coverage run manage.py test
   #- coverage report -m
 
+  - cd ../comments
+  - coverage run manage.py test
+  #- coverage report -m
+
   # - cd ../news
   # - coverage run manage.py test
   #- coverage report -m
@@ -26,8 +30,4 @@ script:
 
   - cd ../stats
   - coverage run manage.py test
-  #- coverage report -m
-
-  # - cd ../comments
-  # - coverage run manage.py test
   #- coverage report -m
