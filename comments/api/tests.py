@@ -26,14 +26,14 @@ class IntegrationTestCase(APITestCase):
             'body': 'How to unit test permissions in django-rest-framework?'
         }
 
-    # def test_post_new_comment(self):
-    #     url, view = self.comments
-    #     request = self.factory.post(url, self.data)
-    #     force_authenticate(request, token=self.auth_owner)
+    def test_post_new_comment(self):
+        url, view = self.comments
+        request = self.factory.post(url, self.data)
+        force_authenticate(request, token=self.auth_owner)
 
-    #     response = view(request)
+        response = view(request)
 
-    #     self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 201)
 
     def test_patch_comment_by_owner(self):
         comment = Comment.objects.create(**self.data)

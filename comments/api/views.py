@@ -16,6 +16,7 @@ from uuid import UUID
 from remoteauth.permissions import IsRemoteAuthenticated
 from generic.views import BaseView
 
+
 class CommentsBaseView(BaseView):
     celery = Celery()
     task = 'tasks.stats.comment'
@@ -24,16 +25,8 @@ class CommentsBaseView(BaseView):
         self.celery.config_from_object(Config)
         super().__init__(**kwargs)
 
-    def exception_msg(self, message: str) -> None:
-        self.logger.exception(message)
-
     def send_task(self, action: str, user: UUID = None, input: dict = None, output: dict = None):
-        from kombu.exceptions import OperationalError
-        try:
-            self.celery.send_task(self.task, [user, action, input, output])
-
-        except OperationalError as error:
-            self.exception_msg(str(error))
+        self.celery.send_task(self.task, [user, action, input, output])
 
 
 class CommentView(CommentsBaseView):
@@ -92,7 +85,7 @@ class CommentsView(CommentsBaseView):
     def post(self, request: Request) -> Response:
         self.info(request, f'adding object')
 
-        data = request.data.copy()
+        data = request.data
         data['author'] = request.auth.get('uuid')
 
         serializer_ = self.serializer(data=data)
