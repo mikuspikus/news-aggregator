@@ -25,16 +25,8 @@ class UserBaseView(BaseView):
         self.celery.config_from_object(Config)
         super().__init__(**kwargs)
 
-    def exception_msg(self, message: str) -> None:
-        self.logger.exception(message)
-
-    def send_task(self, action: str, user: UUID = None, input: dict = None, output: dict = None):
-        from kombu.exceptions import OperationalError
-        try:
-            self.celery.send_task(self.task, [user, action, input, output])
-
-        except OperationalError as error:
-            self.exception_msg(str(error))
+    def send_task(self, action: str, user: str = None, input: dict = None, output: dict = None):
+        self.celery.send_task(self.task, [user, action, input, output])
 
 
 class UserView(UserBaseView):
@@ -57,7 +49,7 @@ class UserView(UserBaseView):
 
         obj = self.get_object(request, pk)
         old_objserializer = self.serializer(instance=obj)
-        serializer_ = self.serializer(instance=obj, data=request.data, partial=True)
+        serializer_ = self.serializer(instance=obj, data=request.data)
 
         if serializer_.is_valid():
             serializer_.save()

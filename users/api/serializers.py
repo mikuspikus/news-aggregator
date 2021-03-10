@@ -40,7 +40,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         if validated_data.get('password'):
             new_password = validated_data.pop('password')
-            credentials['password'] = new_password
+            credentials['password'] = instance.password
             instance.set_password(new_password)
 
         if validated_data.get('is_staff'):
@@ -55,8 +55,8 @@ class UserSerializer(serializers.ModelSerializer):
         if credentials:
             response, code = update_credentials(uuid = instance.id, credentials = credentials)
 
-            if code != 202:
-                msg = response.get('error', 'detail')
+            if code != 200:
+                msg = response.get('error', '')
                 raise serializers.ValidationError(msg)
 
         instance.save()
