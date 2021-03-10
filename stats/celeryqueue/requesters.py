@@ -38,8 +38,6 @@ def token(id: str, secret: str) -> Tuple[dict, int]:
     except RequestException as error:
         return base.process_error(error)
 
-    print(response)
-
     return response.json(), response.status_code
 
 
