@@ -105,12 +105,14 @@ export default {
     },
 
     fetchNews(page) {
-      this.$http.news({
-        url: `news`,
-        params: { page: page },
-        method: "GET"
-      })
+      this.$http
+        .news({
+          url: `news`,
+          params: { page: page },
+          method: "GET"
+        })
         .then(response => {
+          // console.log('Index view resposne', response);
           this.loading = false;
           this.news = response.data.results;
           this.total_pages = response.data.total_pages;

@@ -61,7 +61,11 @@ export default {
 
   methods: {
     fetchUserData() {
-      this.$http.user({ url: `users/${this.uuid}`, method: "GET" })
+      this.$http
+        .user({
+          url: `users/${this.uuid}`,
+          method: "GET"
+        })
         .then(response => {
           this.loading = false;
           this.user = response.data;
@@ -72,8 +76,8 @@ export default {
           ehandler.error(
             this,
             error,
-            "User fetching Error",
-            `user (UUID: ${this.uuid}) not found`
+            "User tetching Error",
+            `user (UUID: ${this.uuid} not found`
           );
           // this.$bvToast.toast(error.message, {
           //   title: "Error",

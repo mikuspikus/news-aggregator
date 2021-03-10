@@ -1,9 +1,5 @@
 <template>
   <div id="comment">
-    <template v-for="(eitems, ename) in errors">
-      <error-card :key="ename" :ename="ename" :eitems="eitems" />
-    </template>
-
     <b-form @submit="onSubmit" @reset="onReset" v-if="show">
       <b-form-group
         id="input-group-comment"
@@ -28,14 +24,8 @@
 </template>
 
 <script>
-import ehandler from "../../utility/errorhandler";
-import ErrorCard from "../utility/ErrorCard.vue";
 export default {
   name: "comment-form",
-
-  components: {
-    ErrorCard
-  },
 
   props: {
     user_uuid: { type: String },
@@ -44,7 +34,6 @@ export default {
 
   data() {
     return {
-      errors: {},
       show: true,
       form: {
         body: ""
@@ -54,33 +43,19 @@ export default {
 
   methods: {
     post(comment) {
-      this.$http
-        .comment({
-          url: "comments",
-          data: comment,
-          method: "POST"
-        })
+      this.$http.comment({
+        url: "comments",
+        data: comment,
+        method: "POST"
+      })
         .then(() => {
           this.$emit("reload-comments");
         })
-        .catch(error => {
-          const { data, code } = ehandler.formerror(error);
-
-          if (code) {
-            this.errors = data;
-          } else {
-            this.$bvToast.toast(data, {
-              title: "Comment Edit Error",
-              autoHideDelay: 5000,
-              toaster: "b-toaster-bottom-center"
-            });
-          }
-        });
+        .catch();
     },
 
     onSubmit(event) {
       event.preventDefault();
-      this.errors = {}
       const comment = {
         author: this.user_uuid,
         news: this.news_uuid,

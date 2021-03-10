@@ -1,8 +1,5 @@
 <template>
-  <div id="news-edit">
-    <template v-for="(eitems, ename) in errors">
-      <error-card :key="ename" :ename="ename" :eitems="eitems" />
-    </template>
+  <div id="news">
     <b-form @submit="onSubmit" @reset="onReset" v-if="show">
       <b-form-group id="input-group-title" label="Title:" label-for="input-title">
         <b-form-input
@@ -25,12 +22,8 @@
 </template>
 
 <script>
-import ehandler from "../../utility/errorhandler.js";
-import ErrorCard from "../utility/ErrorCard.vue";
 export default {
   name: "news-form",
-
-  components: {ErrorCard},
 
   props: {
     news_uuid: String,
@@ -43,7 +36,6 @@ export default {
 
   data() {
     return {
-      errors: {},
       show: true,
       form: {
         title: this.title,
@@ -54,12 +46,11 @@ export default {
 
   methods: {
     patch(data) {
-      this.$http
-        .news({
-          url: `news/${this.news_uuid}`,
-          data: data,
-          method: "PATCH"
-        })
+      this.$http.news({
+        url: `news/${this.news_uuid}`,
+        data: data,
+        method: "PATCH"
+      })
         .then(response => {
           console.log(response);
           this.$emit("update:title", response.data.title);
@@ -68,23 +59,16 @@ export default {
           this.$emit("update:edit", false);
         })
         .catch(error => {
-          const { data, code } = ehandler.formerror(error);
-
-          if (code) {
-            this.errors = data;
-          } else {
-            this.$bvToast.toast(data, {
-              title: "News Edit Error",
-              autoHideDelay: 5000,
-              toaster: "b-toaster-bottom-center"
-            });
-          }
+          this.$bvToast.toast(error.message, {
+            title: "News editing",
+            autoHideDelay: 5000,
+            toaster: "b-toaster-bottom-center"
+          });
         });
     },
 
     onSubmit(event) {
       event.preventDefault();
-      this.errors = {}
       const news = {
         id: this.news_uuid,
         author: this.user_uuid,

@@ -1,8 +1,5 @@
 <template>
   <div id="news">
-    <template v-for="(eitems, ename) in errors">
-      <error-card :key="ename" :ename="ename" :eitems="eitems" />
-    </template>
     <b-form @submit="onSubmit" @reset="onReset" v-if="show">
       <b-form-group id="input-group-title" label="Title:" label-for="input-title">
         <b-form-input
@@ -25,71 +22,97 @@
 </template>
 
 <script>
-import ehandler from "../../utility/errorhandler.js";
-import ErrorCard from "../utility/ErrorCard.vue";
 export default {
   name: "news-form",
 
-  components: { ErrorCard },
+  props: {
+    title: { type: String, default: null },
+    url: { type: String, default: null },
+    edit: { typr: Boolean },
+    uuid: { type: String, default: null }
+  },
 
   data() {
     return {
-      errors: {},
       show: true,
       form: {
-        title: "",
-        url: ""
+        title: this.title !== null ? this.title : "",
+        url: this.url !== null ? this.url : ""
       }
     };
   },
 
+  computed: {
+    isNew() {
+      return !(this.title || this.url || this.uuid);
+    }
+  },
+
   methods: {
     post(data) {
-      this.$http
-        .news({
-          url: "news",
-          data: data,
-          method: "POST"
-        })
+      this.$http.news({
+        url: "news",
+        data: data,
+        method: "POST"
+      })
         .then(response => {
           this.$router.push({
             name: "NewsSingle",
-            params: { uuid: response.data.id }
+            params: { uuid: response.data.uuid }
           });
         })
         .catch(error => {
-          const { data, code } = ehandler.formerror(error);
+          this.$bvToast.toast(error.message, {
+            title: "Error",
+            autoHideDelay: 5000,
+            toaster: "b-toaster-bottom-center"
+          });
+        });
+    },
 
-          if (code) {
-            this.errors = data;
-          } else {
-            this.$bvToast.toast(data, {
-              title: "News Form Error",
-              autoHideDelay: 5000,
-              toaster: "b-toaster-bottom-center"
-            });
-          }
+    patch(data) {
+      this.$http.news({
+        url: `news/${this.uuid}`,
+        data: data,
+        method: "PATCH"
+      })
+        .then(() => {
+          this.$emit('reload')
+        })
+        .catch(error => {
+          this.$bvToast.toast(error.message, {
+            title: "Error",
+            autoHideDelay: 5000,
+            toaster: "b-toaster-bottom-center"
+          });
         });
     },
 
     onSubmit(event) {
       event.preventDefault();
-      this.errors = {}
-      this.$emit("refetch-news");
+
+      this.$emit("update:title", this.form.title);
+      this.$emit("update:url", this.form.url);
+      this.$emit("update:edit", false);
 
       let news_data = {
         title: this.form.title,
         url: this.form.url,
         author: this.$store.getters.uuid
       };
-      this.post(news_data);
+
+      if (this.isNew) {
+        this.post(news_data);
+      } else {
+        this.patch(news_data);
+      }
     },
 
     onReset(event) {
       event.preventDefault();
 
-      this.form.title = "";
-      this.form.url = "";
+      this.form.title = this.title;
+      this.form.url = this.url;
 
       this.show = false;
       // magic trick to reset/clear native browser form validation state

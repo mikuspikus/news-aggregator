@@ -88,10 +88,7 @@ export default new Vuex.Store({
           axios({ url: register_url, data: register_data.user, method: 'POST' })
             .then(response => {
               const token = response.data.token
-              const user = {
-                uuid: response.data.id,
-                username: response.data.username
-              }
+              const user = response.data.user
 
               commit('login', { token: token, user: user })
               localStorage.setItem('token', token)

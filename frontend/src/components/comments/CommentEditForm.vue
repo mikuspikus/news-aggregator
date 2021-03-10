@@ -1,8 +1,5 @@
 <template>
   <div id="comment">
-    <template v-for="(eitems, ename) in errors">
-      <error-card :key="ename" :ename="ename" :eitems="eitems" />
-    </template>
     <b-form @submit="onSubmit" @reset="onReset" v-if="show">
       <b-form-group
         id="input-group-comment"
@@ -13,7 +10,7 @@
         <b-textarea
           id="comment-textarea"
           v-model="form.body"
-          :state="form.body.length >= 10"
+          :state="form.body.length >= 8"
           placeholder="Write here..."
           rows="3"
           max-rows="6"
@@ -27,12 +24,8 @@
 </template>
 
 <script>
-import ehandler from "../../utility/errorhandler.js";
-import ErrorCard from "../utility/ErrorCard.vue";
 export default {
   name: "comment-edit-form",
-
-  components: { ErrorCard },
 
   props: {
     id: Number,
@@ -45,7 +38,6 @@ export default {
 
   data() {
     return {
-      errors: {},
       show: true,
       form: {
         body: this.body
@@ -55,35 +47,27 @@ export default {
 
   methods: {
     patch(comment) {
-      this.$http
-        .comment({
-          url: `comments/${this.id}`,
-          data: comment,
-          method: "PATCH"
-        })
+      this.$httpcomment({
+        url: `comments/${this.id}`,
+        data: comment,
+        method: "PATCH"
+      })
         .then(response => {
           this.$emit("update:body", response.data.body);
           this.$emit("update:edited", response.data.edited);
           this.$emit("update:edit", false);
         })
         .catch(error => {
-          const { data, code } = ehandler.formerror(error);
-
-          if (code) {
-            this.errors = data;
-          } else {
-            this.$bvToast.toast(data, {
-              title: "News Form Error",
-              autoHideDelay: 5000,
-              toaster: "b-toaster-bottom-center"
-            });
-          }
+          this.$bvToast.toast(error.message, {
+            title: "Comment editing error",
+            autoHideDelay: 5000,
+            toaster: "b-toaster-bottom-center"
+          });
         });
     },
 
     onSubmit(event) {
       event.preventDefault();
-      this.errors = {};
 
       const comment = {
         id: this.id,
