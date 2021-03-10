@@ -23,16 +23,8 @@ class FeedBaseView(BaseView):
         self.celery.config_from_object(Config)
         super().__init__(**kwargs)
 
-    def exception_msg(self, message: str) -> None:
-        self.logger.exception(message)
-
     def send_task(self, action: str, user: UUID = None, input: dict = None, output: dict = None):
-        from kombu.exceptions import OperationalError
-        try:
-            self.celery.send_task(self.task, [user, action, input, output])
-
-        except OperationalError as error:
-            self.exception_msg(str(error))
+        self.celery.send_task(self.task, [user, action, input, output])
 
 
 class FeedParseView(FeedBaseView):
@@ -126,7 +118,7 @@ class FeedView(FeedBaseView):
         serializer = self.serializer(instance=obj)
         obj.delete()
         user = request.auth.get('uuid') if request.auth else None
-        self.send_task(action='DELETE', user=user, output=serializer.data)
+        self.send_task(name='DELETE', user=user, output=serializer.data)
 
         return Response(status=st.HTTP_204_NO_CONTENT)
 
