@@ -1,0 +1,3 @@
+celery==4.4.0
+requests==2.23.0
+redis==3.4.1
