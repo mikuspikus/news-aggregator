@@ -5,13 +5,13 @@ class IsAuthorized(BasePermission):
     SAFE_METHODS = ("OPTIONS", )
 
     def has_permission(self, request: Request, view: APIView) -> bool:
-        return bool(request.method in self.SAFE_METHODS or request.auth)
+        return request.method in self.SAFE_METHODS or request.auth
 
 class IsAuthenticatedForMethods(BasePermission):
     SAFE_METHODS = ('POST', "OPTIONS")
 
     def has_permission(self, request: Request, view: APIView) -> bool:
-        return bool(request.method in self.SAFE_METHODS or request.auth)
+        return request.method in self.SAFE_METHODS or request.auth
 
 class IsAuthorizedAndOwner(BasePermission):
     SAFE_METHODS = ('GET', "OPTIONS")

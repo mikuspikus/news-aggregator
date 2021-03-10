@@ -1,0 +1,26 @@
+version: '3.3'
+
+services:
+  stats:
+    build: ./stats
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./stats/:/usr/src/stats/
+    ports:
+      - 8000:8000
+    env_file:
+      - ./stats/.env.dev
+    depends_on: 
+        - db
+
+  db:
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=news_agreggator
+      - POSTGRES_PASSWORD=news_agreggator
+      - POSTGRES_DB=news_agreggator_dev
+
+volumes: 
+    postgres_data:

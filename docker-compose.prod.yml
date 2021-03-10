@@ -1,0 +1,36 @@
+version: "3.3"
+
+services:
+  stats:
+    build:
+      context: ./stats
+      dockerfile: Dockerfile.prod
+    command: gunicorn stats.wsgi:application --bind 0.0.0.0:8083
+    volumes:
+      - static_volume:/home/stats/api/staticfiles
+    expose: 
+      - 8083
+    env_file:
+      - ./stats/.env.prod
+    depends_on:
+      - db
+
+  db:
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.prod.db
+
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/stats/api/staticfiles
+    ports:
+      - 1337:80
+    depends_on:
+      - stats
+
+volumes:
+  postgres_data:
+  static_volume:

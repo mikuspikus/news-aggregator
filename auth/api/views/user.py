@@ -13,7 +13,6 @@ from ..authentication import (
 from ..serializers.user import UserSerializer
 
 from generic.views import BaseView
-from generic.permissions import IsAuthorized
 
 from rest_framework.views import Request, Response
 import rest_framework.status as st
@@ -53,8 +52,8 @@ class AuthTokenView(BaseView):
 
 class UserView(BaseView):
     model = AuthUser
-    authentication_classes = (UserTokenAuthentication, ServicesAuthentication)
-    permission_classes = (IsAuthorized, )
+    authentication_classes = (UserTokenAuthentication,)
+    permission_classes = (IsAuthenticated, )
     serializer = UserSerializer
 
     def patch(self, request: Request, uuid: str, format: str = "json") -> Response:
@@ -66,7 +65,7 @@ class UserView(BaseView):
             self.exception(f"object with id : {uuid} not found")
             return Response(status=st.HTTP_404_NOT_FOUND)
 
-        serializer_ = self.serializer(instance=row_, data=request.data, partial=True)
+        serializer_ = self.serializer(instance=row_, data=request.data)
 
         if serializer_.is_valid():
             serializer_.save()
