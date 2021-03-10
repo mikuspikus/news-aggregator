@@ -1,36 +1,283 @@
 version: "3.3"
 
 services:
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile.prod
+    command: gunicorn auth.wsgi:application --bind 0.0.0.0:8080
+    volumes:
+      - auth_static_volume:/home/auth/api/staticfiles
+    expose:
+      - 8080
+    env_file:
+      - ./auth/.env.prod
+    links:
+      - psql_auth
+    depends_on:
+      - psql_auth
+
+  psql_auth:
+    image: postgres:12.0-alpine
+    expose:
+      - 5432
+    volumes:
+      - psql_auth_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=auth_service
+      - POSTGRES_PASSWORD=auth_service
+      - POSTGRES_DB=auth_service_prod
+
+  rssparser:
+    build:
+      context: ./rssparser
+      dockerfile: Dockerfile.prod
+    command: gunicorn rssparser.wsgi:application --bind 0.0.0.0:8085
+    volumes:
+      - rssparser_static_volume:/home/rssparser/api/staticfiles
+    expose:
+      - 8085
+    links:
+      - auth
+      - psql_rssparser
+    env_file:
+      - ./rssparser/.env.prod
+    depends_on:
+      - psql_rssparser
+      - auth
+
+  psql_rssparser:
+    image: postgres:12.0-alpine
+    expose:
+      - 5432
+    volumes:
+      - psql_rssparser_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=rssparser_service
+      - POSTGRES_PASSWORD=rssparser_service
+      - POSTGRES_DB=rssparser_service_prod
+
   stats:
     build:
       context: ./stats
       dockerfile: Dockerfile.prod
     command: gunicorn stats.wsgi:application --bind 0.0.0.0:8083
     volumes:
-      - static_volume:/home/stats/api/staticfiles
-    expose: 
+      - stats_static_volume:/home/stats/api/staticfiles
+    expose:
       - 8083
+    links:
+      - auth
+      - psql_stats
     env_file:
       - ./stats/.env.prod
     depends_on:
-      - db
+      - psql_stats
+      - auth
 
-  db:
+  psql_stats:
     image: postgres:12.0-alpine
+    expose:
+      - 5432
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - psql_stats_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=stats_service
+      - POSTGRES_PASSWORD=stats_service
+      - POSTGRES_DB=stats_service_prod
+
+
+  news:
+    build:
+      context: ./news
+      dockerfile: Dockerfile.prod
+    command: gunicorn news.wsgi:application --bind 0.0.0.0:8082
+    volumes:
+      - news_static_volume:/home/news/api/staticfiles
+    expose:
+      - 8082
     env_file:
-      - ./.env.prod.db
+      - ./news/.env.prod
+    links:
+      - psql_news
+      - auth
+    depends_on:
+      - psql_news
+      - auth
+    
+  psql_news:
+    image: postgres:12.0-alpine
+    expose:
+      - 5432
+    volumes:
+      - psql_news_data:/var/lib/postgresql/data/
+    env_file: 
+      - ./postgres/.env.news.prod
+
+  comments:
+    build:
+      context: ./comments
+      dockerfile: Dockerfile.prod
+    command: gunicorn comments.wsgi:application --bind 0.0.0.0:8084
+    volumes:
+      - comments_static_volume:/home/comments/api/staticfiles
+    expose:
+      - 8084
+    env_file:
+      - ./comments/.env.prod
+    links:
+      - psql_comments
+      - auth
+      - news
+    depends_on:
+      - psql_comments
+      - auth
+      - news
+    
+  psql_comments:
+    image: postgres:12.0-alpine
+    expose:
+      - 5432
+    volumes:
+      - psql_comments_data:/var/lib/postgresql/data/
+    env_file: 
+      - ./postgres/.env.comments.prod
+
+  users:
+    build:
+      context: ./users
+      dockerfile: Dockerfile.prod
+    command: gunicorn users.wsgi:application --bind 0.0.0.0:8081
+    volumes:
+      - users_static_volume:/home/users/api/staticfiles
+    expose:
+      - 8081
+    env_file:
+      - ./users/.env.prod
+    links:
+      - psql_users
+      - auth
+    depends_on:
+      - psql_users
+      - auth
+    
+  psql_users:
+    image: postgres:12.0-alpine
+    expose:
+      - 5432
+    volumes:
+      - psql_users_data:/var/lib/postgresql/data/
+    env_file: 
+      - ./postgres/.env.users.prod
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: frontend
+    command: nginx -g 'daemon off;'
+    restart: on-failure
+    links:
+      - auth
+      - rssparser
+    ports:
+      - "80:80"
+    expose:
+      - 80
+
+  redis:
+    image: "redis:4-alpine"
+    ports:
+      - "6379:6379"
+
+  statsworker:
+    build:
+      context: ./statsworker
+      dockerfile: Dockerfile.prod
+    command: celery -A celeryqueue worker -l info
+    env_file: ./statsworker/.env.prod
+    links:
+      - redis
+    depends_on:
+      - redis
+      - auth
+      - rssparser
+
+  flower:
+    build:
+      context: ./flower
+      dockerfile: Dockerfile
+    ports:
+      - "5555:5555"
+    links:
+      - redis
+    depends_on:
+      - redis
+    environment:
+      - R_PWD=
+      - R_HOST=redis
+      - R_PORT=6379
+      - R_DB=0
+    command:
+      [
+        "celery",
+        "flower",
+        "--broker=redis://${R_PWD}${R_HOST}:${R_PORT}/${R_DB}",
+        "--basic_auth=${FLOWER_USER}:${FLOWER_PWD}",
+      ]
+    env_file:
+      - ./flower/.env.prod
+
+  # db:
+  #   image: postgres:12.0-alpine
+  #   volumes:
+  #     - ./postgres/pg-init-scripts:/docker-entrypoint-initdb.d
+  #     - postgres_data:/var/lib/postgresql/data/
+  #   env_file:
+  #     - ./postgres/.env.prod.db
 
   nginx:
     build: ./nginx
     volumes:
-      - static_volume:/home/stats/api/staticfiles
+      - stats_static_volume:/home/stats/api/staticfiles
+      - rssparser_static_volume:/home/rssparser/api/staticfiles
+      - auth_static_volume:/home/auth/api/staticfiles
     ports:
-      - 1337:80
+      # auth service
+      - 8080:8080
+      # users service
+      - 8081:8081
+      # news service
+      - 8082:8082
+      # stats service
+      - 8083:8083
+      # comments service
+      - 8084:8084
+      # rssparser service
+      - 8085:8085
+      # frontend
+      # - 80:80
     depends_on:
+      - frontend
+      - auth
+      - news
+      - comments
+      - users
       - stats
+      - rssparser
 
 volumes:
-  postgres_data:
-  static_volume:
+  psql_auth_data:
+  psql_rssparser_data:
+  psql_stats_data:
+  psql_news_data:
+  psql_comments_data:
+  psql_users_data:
+
+  # admin panel static
+  stats_static_volume:
+  rssparser_static_volume:
+  auth_static_volume:
+  news_static_volume:
+  comments_static_volume:
+  users_static_volume:
