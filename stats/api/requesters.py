@@ -6,7 +6,7 @@ from redis import StrictRedis
 from django.conf import settings
 
 __default_urls = {
-    'login' : 'http://localhost:8080/v0/users/login',
+    'login' : 'http://auth:8080/v0/users/login',
     'auth-token': 'http://localhost:8080/v0/tokens',
     'send-credentials': 'http://localhost:8080/v0/users',
     'update-credentials': 'http://localhost:8080/v0/users/{uuid}'

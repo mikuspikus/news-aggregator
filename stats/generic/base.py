@@ -29,10 +29,6 @@ def get(url: str, data: dict = {}, headers: dict = {}) -> requests.Response:
     return requests.get(url=url, json=data, headers=headers)
 
 
-def postf(url: str, data: dict = {}, headers: dict = {}) -> requests.Response:
-    info(f'requesting {url} with method \'POST\'')
-    return requests.post(url=url, data=data, headers=headers)
-
 def post(url: str, data: dict = {}, headers: dict = {}) -> requests.Response:
     info(f'requesting {url} with method \'POST\'')
     return requests.post(url=url, json=data, headers=headers)
