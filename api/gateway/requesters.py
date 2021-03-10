@@ -15,10 +15,6 @@ __default_urls = {
     'authenticate': 'http://localhost:8080/v0/users/logged-in',
     'login': 'http://localhost:8080/v0/users/login',
     'auth-token': 'http://localhost:8080/v0/tokens',
-
-    'news': 'http://127.0.0.1:8082/v0/news',
-    'users': 'http://127.0.0.1:8081/v0/users',
-    'comments': 'http://127.0.0.1:8084/v0/comments',
 }
 URLS = getattr(settings, 'URLS', __default_urls)
 
